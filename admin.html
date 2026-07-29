@@ -18,15 +18,17 @@
       release: document.getElementById("release").value + ":00+07:00",
     };
 
-    await fetch("/add-game", {
-      method: "POST",
+    await supabase
 
-      headers: {
-        "Content-Type": "application/json",
-      },
+      .from("games")
 
-      body: JSON.stringify(game),
-    });
+      .insert({
+        name,
+
+        image,
+
+        release,
+      });
 
     alert("Added!");
   }
