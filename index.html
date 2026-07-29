@@ -95,6 +95,14 @@
 
           .order("release");
 
+        console.log("Games:", games);
+        console.log("Error:", error);
+
+        if (error) {
+          console.error(error);
+          return;
+        }
+
         const container = document.getElementById("games");
 
         games.forEach((game) => {
