@@ -1,0 +1,33 @@
+<!doctype html>
+
+<input id="name" placeholder="Game Name" />
+
+<input id="image" placeholder="Image URL" />
+
+<input id="release" type="datetime-local" />
+
+<button onclick="addGame()">Add Game</button>
+
+<script>
+  async function addGame() {
+    const game = {
+      name: document.getElementById("name").value,
+
+      image: document.getElementById("image").value,
+
+      release: document.getElementById("release").value + ":00+07:00",
+    };
+
+    await fetch("/add-game", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify(game),
+    });
+
+    alert("Added!");
+  }
+</script>
