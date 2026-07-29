@@ -7,7 +7,13 @@
 <input id="release" type="datetime-local" />
 
 <button onclick="addGame()">Add Game</button>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  const sb = window.supabase.createClient(
+    "https://jwncunroufyxkibdutzv.supabase.co",
+
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3bmN1bnJvdWZ5eGtpYmR1dHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzMzI2ODEsImV4cCI6MjEwMDkwODY4MX0.vMHa7c3E9ePwo3g93teQ343pl4O3JBpOTONDNv0Nyuc",
+  );
   async function addGame() {
     const game = {
       name: document.getElementById("name").value,
@@ -17,7 +23,7 @@
       release: document.getElementById("release").value + ":00+07:00",
     };
 
-    await supabase.from("games").insert(game);
+    await sb.from("games").insert(game);
 
     alert("Added!");
   }
