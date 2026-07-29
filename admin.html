@@ -1,30 +1,144 @@
 <!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<input id="name" placeholder="Game Name" />
+    <title>Add Game</title>
 
-<input id="image" placeholder="Image URL" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+      }
 
-<input id="release" type="datetime-local" />
+      body {
+        background: #111;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
 
-<button onclick="addGame()">Add Game</button>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const sb = window.supabase.createClient(
-    "https://jwncunroufyxkibdutzv.supabase.co",
+      .form {
+        width: 420px;
+        background: #1b1b1b;
+        padding: 35px;
+        border-radius: 18px;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.45);
+      }
 
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3bmN1bnJvdWZ5eGtpYmR1dHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzMzI2ODEsImV4cCI6MjEwMDkwODY4MX0.vMHa7c3E9ePwo3g93teQ343pl4O3JBpOTONDNv0Nyuc",
-  );
-  async function addGame() {
-    const game = {
-      name: document.getElementById("name").value,
+      h1 {
+        color: white;
+        text-align: center;
+        margin-bottom: 30px;
+      }
 
-      image: document.getElementById("image").value,
+      label {
+        display: block;
+        color: #bbb;
+        margin-bottom: 8px;
+        margin-top: 18px;
+        font-size: 14px;
+      }
 
-      release: document.getElementById("release").value + ":00+07:00",
-    };
+      input {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        outline: none;
+        border-radius: 10px;
+        background: #2b2b2b;
+        color: white;
+        font-size: 16px;
+        transition: 0.25s;
+      }
 
-    await sb.from("games").insert(game);
+      input:focus {
+        border: 2px solid #00d4ff;
+      }
 
-    alert("Added!");
-  }
-</script>
+      button {
+        width: 100%;
+        margin-top: 30px;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        background: #00bfff;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.25s;
+      }
+
+      button:hover {
+        background: #009fd9;
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="form">
+      <h1>Add Game</h1>
+
+      <label>Game Name</label>
+      <input id="name" placeholder="Resident Evil Requiem" />
+
+      <label>Image URL</label>
+      <input id="image" placeholder="https://..." />
+      <img
+        id="preview"
+        style="
+          width: 100%;
+          margin-top: 15px;
+          border-radius: 10px;
+          display: none;
+        "
+      />
+
+      <label>Release Date</label>
+      <input id="release" type="datetime-local" step="60" />
+
+      <button onclick="addGame()">Add Game</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+      document.getElementById("image").addEventListener("input", (e) => {
+        const img = document.getElementById("preview");
+        img.src = e.target.value;
+        img.style.display = "block";
+      });
+      const sb = window.supabase.createClient(
+        "YOUR_PROJECT_URL",
+        "YOUR_ANON_KEY",
+      );
+
+      async function addGame() {
+        const game = {
+          name: document.getElementById("name").value,
+          image: document.getElementById("image").value,
+          release: document.getElementById("release").value + ":00+07:00",
+        };
+
+        const { error } = await sb.from("games").insert(game);
+
+        if (error) {
+          alert(error.message);
+          return;
+        }
+
+        alert("Game added!");
+
+        document.getElementById("name").value = "";
+        document.getElementById("image").value = "";
+        document.getElementById("release").value = "";
+      }
+    </script>
+  </body>
+</html>
