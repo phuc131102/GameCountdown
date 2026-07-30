@@ -71,10 +71,34 @@
       .out {
         color: #00ff88;
       }
+
+      .top-bar{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:20px;
+}
+
+.btn{
+    background:#00bfff;
+    color:white;
+    text-decoration:none;
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:bold;
+    transition:.25s;
+}
+
+.btn:hover{
+    background:#009fd9;
+}
     </style>
   </head>
 
   <body>
+    <div class="top-bar">
+      <a href="admin.html" class="btn">➕ Add Game</a>
+    </div>
+    
     <h1>Upcoming Games</h1>
 
     <div class="container" id="games"></div>
