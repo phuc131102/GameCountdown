@@ -78,10 +78,33 @@
         background: #009fd9;
         transform: translateY(-2px);
       }
+      .top-bar{
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+    margin-bottom:25px;
+}
+
+.btn{
+    background:#00bfff;
+    color:white;
+    text-decoration:none;
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:bold;
+    transition:.25s;
+}
+
+.btn:hover{
+    background:#009fd9;
+}
     </style>
   </head>
 
   <body>
+    <div class="top-bar">
+    <a href="index.html" class="btn">🏠 Home</a>
+</div>
     <div class="form">
       <h1>Add Game</h1>
 
