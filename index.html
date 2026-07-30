@@ -189,7 +189,7 @@
           
               if (!confirm(`Delete "${game.name}"?`)) return;
           
-              const { error } = await supabase
+              const { error } = await sb
                   .from("games")
                   .delete()
                   .eq("id", game.id);
