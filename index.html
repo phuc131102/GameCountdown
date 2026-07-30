@@ -160,25 +160,6 @@
           const card = document.createElement("div");
           card.className = "card";
 
-          card.querySelector(".delete-btn").addEventListener("click", async (e) => {
-
-              e.stopPropagation();
-          
-              if (!confirm(`Delete "${game.name}"?`)) return;
-          
-              const { error } = await supabase
-                  .from("games")
-                  .delete()
-                  .eq("id", game.id);
-          
-              if (error) {
-                  alert(error.message);
-                  return;
-              }
-          
-              card.remove();
-          });
-
           card.innerHTML = `
             <button class="delete-btn" title="Delete">&times;</button>
             <img src="${game.image}" alt="${game.name}">
@@ -201,6 +182,25 @@
 
           game.element = card.querySelector(".countdown");
         });
+
+         card.querySelector(".delete-btn").addEventListener("click", async (e) => {
+
+              e.stopPropagation();
+          
+              if (!confirm(`Delete "${game.name}"?`)) return;
+          
+              const { error } = await supabase
+                  .from("games")
+                  .delete()
+                  .eq("id", game.id);
+          
+              if (error) {
+                  alert(error.message);
+                  return;
+              }
+          
+              card.remove();
+          });
 
         function updateCountdown() {
           const now = new Date();
