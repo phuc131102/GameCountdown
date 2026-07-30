@@ -181,9 +181,8 @@
           container.appendChild(card);
 
           game.element = card.querySelector(".countdown");
-        });
-
-         card.querySelector(".delete-btn").addEventListener("click", async (e) => {
+          
+          card.querySelector(".delete-btn").addEventListener("click", async (e) => {
 
               e.stopPropagation();
           
@@ -201,6 +200,7 @@
           
               card.remove();
           });
+        });
 
         function updateCountdown() {
           const now = new Date();
