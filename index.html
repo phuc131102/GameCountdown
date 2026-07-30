@@ -176,6 +176,21 @@
         updateCountdown();
 
         setInterval(updateCountdown, 1000);
+
+        const now = new Date();
+
+const nextGame = games.find(game => new Date(game.release) > now);
+
+if (nextGame) {
+  const card = nextGame.element.closest(".card");
+
+  card.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  card.style.border = "3px solid #00d4ff";
+}
       })();
     </script>
   </body>
