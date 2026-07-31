@@ -235,7 +235,7 @@
 
     if(release === null) return;
 
-    const { error } = await supabase
+    const { error } = await sb
         .from("games")
         .update({
             name,
