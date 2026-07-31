@@ -126,6 +126,53 @@
 .delete-btn:hover{
     background:#e53935;
 }
+
+.card-actions{
+    position:absolute;
+    top:12px;
+    right:12px;
+
+    display:flex;
+    gap:8px;
+
+    opacity:0;
+    transform:translateY(-5px);
+
+    transition:.2s;
+
+    z-index:20;
+}
+
+.card:hover .card-actions{
+    opacity:1;
+    transform:translateY(0);
+}
+
+.edit-btn,
+.delete-btn{
+    width:34px;
+    height:34px;
+
+    border:none;
+    border-radius:50%;
+
+    color:white;
+    cursor:pointer;
+
+    font-size:18px;
+
+    background:rgba(0,0,0,.75);
+
+    transition:.2s;
+}
+
+.edit-btn:hover{
+    background:#ff9800;
+}
+
+.delete-btn:hover{
+    background:#e53935;
+}
     </style>
   </head>
 
@@ -161,7 +208,10 @@
           card.className = "card";
 
           card.innerHTML = `
-            <button class="delete-btn" title="Delete">&times;</button>
+            <div class="card-actions">
+        <button class="edit-btn" title="Edit">✏️</button>
+        <button class="delete-btn" title="Delete">&times;</button>
+    </div>
             <img src="${game.image}" alt="${game.name}">
             <div class="info">
                 <h2>${game.name}</h2>
@@ -200,6 +250,40 @@
           
               card.remove();
           });
+
+        card.querySelector(".edit-btn").addEventListener("click", async (e) => {
+
+    e.stopPropagation();
+
+    const name = prompt("Game Name", game.name);
+    if(name === null) return;
+
+    const image = prompt("Image URL", game.image);
+    if(image === null) return;
+
+    const release = prompt(
+        "Release (YYYY-MM-DDTHH:mm:ss+07:00)",
+        game.release
+    );
+
+    if(release === null) return;
+
+    const { error } = await supabase
+        .from("games")
+        .update({
+            name,
+            image,
+            release
+        })
+        .eq("id", game.id);
+
+    if(error){
+        alert(error.message);
+        return;
+    }
+
+    location.reload();
+});
         });
 
         function updateCountdown() {
