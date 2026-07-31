@@ -311,6 +311,7 @@
                     document.getElementById("editImage").value = game.image;
 
                     const release = new Date(game.release);
+                    const now = new Date();
 
                     // Chuyển sang giờ địa phương trước khi đưa vào datetime-local
                     const local = new Date(release.getTime() - release.getTimezoneOffset() * 60000);
@@ -319,7 +320,10 @@
                         local.toISOString().slice(0, 16);
 
                     document.getElementById("editStatus").value =
-                        game.status ?? "countdown";
+                        game.status ?? "out";
+
+                    document.getElementById("statusGroup").style.display =
+                        release <= now ? "block" : "none";
 
                     document.getElementById("editModal").style.display = "flex";
 
@@ -433,14 +437,16 @@
             <label>Release Date</label>
             <input id="editRelease" type="datetime-local" step="60">
 
-            <label>Status</label>
+            <div id="statusGroup">
+                <label>Status</label>
 
-            <select id="editStatus">
-                <option value="countdown">Countdown</option>
-                <option value="playing">Playing</option>
-                <option value="story">Story Completed</option>
-                <option value="100">Platinum</option>
-            </select>
+                <select id="editStatus">
+                    <option value="out">OUT NOW!</option>
+                    <option value="playing">🎮 Playing</option>
+                    <option value="story_completed">📖 Story Completed</option>
+                    <option value="completed_100">🏆 100% Completed</option>
+                </select>
+            </div>
 
             <div class="modal-buttons">
                 <button id="cancelEdit">Cancel</button>
