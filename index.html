@@ -212,6 +212,10 @@
             color: white;
         }
 
+        .backlog {
+            color: #b388ff;
+        }
+
         .out {
             color: #00ff88;
         }
@@ -364,14 +368,19 @@
 
                         switch (game.status) {
 
+                            case "backlog":
+                                game.element.innerHTML =
+                                    '<span class="backlog">📚 BACKLOG</span>';
+                                break;
+
                             case "playing":
                                 game.element.innerHTML =
-                                    '<span class="playing">🎮 PLAYING</span>';
+                                    '<span class="playing">⚔️ PLAYING</span>';
                                 break;
 
                             case "story":
                                 game.element.innerHTML =
-                                    '<span class="story">📖 STORY COMPLETED</span>';
+                                    '<span class="story">🌟 STORY COMPLETED</span>';
                                 break;
 
                             case "100":
@@ -381,7 +390,7 @@
 
                             default:
                                 game.element.innerHTML =
-                                    '<span class="out">OUT NOW!</span>';
+                                    '<span class="out">🔥 OUT NOW!</span>';
                         }
 
                         return;
@@ -441,7 +450,7 @@
                 <label>Status</label>
 
                 <select id="editStatus">
-                    <option value="out">OUT NOW!</option>
+                    <option value="backlog">Backlog</option>
                     <option value="playing">🎮 Playing</option>
                     <option value="story_completed">📖 Story Completed</option>
                     <option value="completed_100">🏆 100% Completed</option>
