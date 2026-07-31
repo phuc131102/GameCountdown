@@ -1,240 +1,242 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Game Countdown</title>
 
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: Arial, Helvetica, sans-serif;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
-      body {
-        background: #111;
-        color: white;
-        padding: 40px;
-      }
+        body {
+            background: #111;
+            color: white;
+            padding: 40px;
+        }
 
-      h1 {
-        text-align: center;
-        margin-bottom: 30px;
-      }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-      .container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 25px;
-      }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
 
-      .card {
-    position: relative;
-    background: #1c1c1c;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 0 15px rgba(0,0,0,.5);
-    transition: .3s;
-}
+        .card {
+            position: relative;
+            background: #1c1c1c;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 0, 0, .5);
+            transition: .3s;
+        }
 
-.card:hover {
-    transform: translateY(-5px);
-}
+        .card:hover {
+            transform: translateY(-5px);
+        }
 
-.card img {
-    width: 100%;
-    height: 380px;
-    object-fit: cover;
-}
+        .card img {
+            width: 100%;
+            height: 380px;
+            object-fit: cover;
+        }
 
-.info {
-    padding: 20px;
-}
+        .info {
+            padding: 20px;
+        }
 
-.info h2 {
-    margin-bottom: 15px;
-    font-size: 24px;
-}
+        .info h2 {
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
 
-.release {
-    color: #999;
-    margin-bottom: 12px;
-}
+        .release {
+            color: #999;
+            margin-bottom: 12px;
+        }
 
-.countdown {
-    font-size: 22px;
-    font-weight: bold;
-    color: #00d4ff;
-}
+        .countdown {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00d4ff;
+        }
 
-.out {
-    color: #00ff88;
-}
+        .out {
+            color: #00ff88;
+        }
 
-/* Header */
+        /* Header */
 
-.top-bar {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 20px;
-}
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
 
-.btn {
-    background: #00bfff;
-    color: white;
-    text-decoration: none;
-    padding: 12px 22px;
-    border-radius: 10px;
-    font-weight: bold;
-    transition: .25s;
-}
+        .btn {
+            background: #00bfff;
+            color: white;
+            text-decoration: none;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: .25s;
+        }
 
-.btn:hover {
-    background: #009fd9;
-}
+        .btn:hover {
+            background: #009fd9;
+        }
 
-/* Card action buttons */
+        /* Card action buttons */
 
-.card-actions {
-    position: absolute;
-    top: 12px;
-    right: 12px;
+        .card-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
 
-    display: flex;
-    gap: 8px;
+            display: flex;
+            gap: 8px;
 
-    opacity: 0;
-    transform: translateY(-5px);
-    transition: .2s;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: .2s;
 
-    z-index: 10;
-}
+            z-index: 10;
+        }
 
-.card:hover .card-actions {
-    opacity: 1;
-    transform: translateY(0);
-}
+        .card:hover .card-actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-.card-actions button {
-    width: 34px;
-    height: 34px;
+        .card-actions button {
+            width: 34px;
+            height: 34px;
 
-    border: none;
-    border-radius: 50%;
+            border: none;
+            border-radius: 50%;
 
-    background: rgba(0,0,0,.75);
-    color: #fff;
+            background: rgba(0, 0, 0, .75);
+            color: #fff;
 
-    font-size: 18px;
-    cursor: pointer;
+            font-size: 18px;
+            cursor: pointer;
 
-    transition: .2s;
-}
+            transition: .2s;
+        }
 
-.edit-btn:hover {
-    background: #ff9800;
-}
+        .edit-btn:hover {
+            background: #ff9800;
+        }
 
-.delete-btn:hover {
-    background: #e53935;
-}
-      .modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.6);
+        .delete-btn:hover {
+            background: #e53935;
+        }
 
-    display:none;
-    justify-content:center;
-    align-items:center;
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
 
-    z-index:999;
-}
+            display: none;
+            justify-content: center;
+            align-items: center;
 
-.modal-content{
-    width:420px;
-    background:#1c1c1c;
-    padding:25px;
-    border-radius:15px;
-}
+            z-index: 999;
+        }
 
-.modal-content h2{
-    margin-bottom:20px;
-}
+        .modal-content {
+            width: 420px;
+            background: #1c1c1c;
+            padding: 25px;
+            border-radius: 15px;
+        }
 
-.modal-content label{
-    display:block;
-    margin:15px 0 5px;
-}
+        .modal-content h2 {
+            margin-bottom: 20px;
+        }
 
-.modal-content input{
-    width:100%;
-    padding:10px;
-    border:none;
-    border-radius:8px;
-    background:#333;
-    color:white;
-}
+        .modal-content label {
+            display: block;
+            margin: 15px 0 5px;
+        }
 
-.modal-buttons{
-    margin-top:20px;
-    display:flex;
-    justify-content:flex-end;
-    gap:10px;
-}
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #333;
+            color: white;
+        }
 
-.modal-buttons button{
-    padding:10px 18px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-}
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
 
-#saveEdit{
-    background:#00bfff;
-    color:white;
-}
+        .modal-buttons button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
 
-#cancelEdit{
-    background:#555;
-    color:white;
-}
+        #saveEdit {
+            background: #00bfff;
+            color: white;
+        }
+
+        #cancelEdit {
+            background: #555;
+            color: white;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <div class="top-bar">
-      <a href="admin.html" class="btn">➕ Add Game</a>
+        <a href="admin.html" class="btn">➕ Add Game</a>
     </div>
-    
+
     <h1>Upcoming Games</h1>
 
     <div class="container" id="games"></div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-      const sb = window.supabase.createClient(
-        "https://jwncunroufyxkibdutzv.supabase.co",
+        const sb = window.supabase.createClient(
+            "https://jwncunroufyxkibdutzv.supabase.co",
 
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3bmN1bnJvdWZ5eGtpYmR1dHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzMzI2ODEsImV4cCI6MjEwMDkwODY4MX0.vMHa7c3E9ePwo3g93teQ343pl4O3JBpOTONDNv0Nyuc",
-      );
-      (async () => {
-        const { data: games, error } = await sb
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3bmN1bnJvdWZ5eGtpYmR1dHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzMzI2ODEsImV4cCI6MjEwMDkwODY4MX0.vMHa7c3E9ePwo3g93teQ343pl4O3JBpOTONDNv0Nyuc",
+        );
+        (async () => {
+            const {data: games, error} = await sb
 
-          .from("games")
+                .from("games")
 
-          .select("*")
+                .select("*")
 
-          .order("release");
+                .order("release");
 
-        const container = document.getElementById("games");
+            const container = document.getElementById("games");
 
-        games.forEach((game) => {
-          const card = document.createElement("div");
-          card.className = "card";
+            games.forEach((game) => {
+                const card = document.createElement("div");
+                card.className = "card";
 
-          card.innerHTML = `
+                card.innerHTML = `
             <div class="card-actions">
         <button class="edit-btn" title="Edit">✏️</button>
         <button class="delete-btn" title="Delete">&times;</button>
@@ -245,148 +247,149 @@
 
                 <div class="release">
                     ${new Date(game.release).toLocaleString("en-GB", {
-                      timeZone: "Asia/Ho_Chi_Minh",
-                      dateStyle: "full",
-                      timeStyle: "short",
-                    })}
+                    timeZone: "Asia/Ho_Chi_Minh",
+                    dateStyle: "full",
+                    timeStyle: "short",
+                })}
                 </div>
 
                 <div class="countdown"></div>
             </div>
         `;
 
-          container.appendChild(card);
+                container.appendChild(card);
 
-          game.element = card.querySelector(".countdown");
-          
-          card.querySelector(".delete-btn").addEventListener("click", async (e) => {
+                game.element = card.querySelector(".countdown");
 
-              e.stopPropagation();
-          
-              if (!confirm(`Delete "${game.name}"?`)) return;
-          
-              const { error } = await sb
-                  .from("games")
-                  .delete()
-                  .eq("id", game.id);
-          
-              if (error) {
-                  alert(error.message);
-                  return;
-              }
-          
-              card.remove();
-          });
+                card.querySelector(".delete-btn").addEventListener("click", async (e) => {
 
-       card.querySelector(".edit-btn").addEventListener("click", () => {
+                    e.stopPropagation();
 
-    document.getElementById("editName").value = game.name;
-    document.getElementById("editImage").value = game.image;
+                    if (!confirm(`Delete "${game.name}"?`)) return;
 
-    const release = new Date(game.release);
+                    const {error} = await sb
+                        .from("games")
+                        .delete()
+                        .eq("id", game.id);
 
-// Chuyển sang giờ địa phương trước khi đưa vào datetime-local
-const local = new Date(release.getTime() - release.getTimezoneOffset() * 60000);
+                    if (error) {
+                        alert(error.message);
+                        return;
+                    }
 
-document.getElementById("editRelease").value =
-    local.toISOString().slice(0, 16);
+                    card.remove();
+                });
 
-    document.getElementById("editModal").style.display = "flex";
+                card.querySelector(".edit-btn").addEventListener("click", () => {
 
-    document.getElementById("saveEdit").onclick = async () => {
+                    document.getElementById("editName").value = game.name;
+                    document.getElementById("editImage").value = game.image;
 
-        const { error } = await sb
-            .from("games")
-            .update({
-                name: document.getElementById("editName").value,
-                image: document.getElementById("editImage").value,
-                release:
-                    document.getElementById("editRelease").value +
-                    ":00+07:00",
-            })
-            .eq("id", game.id);
+                    const release = new Date(game.release);
 
-        if (error) {
-            alert(error.message);
-            return;
-        }
+                    // Chuyển sang giờ địa phương trước khi đưa vào datetime-local
+                    const local = new Date(release.getTime() - release.getTimezoneOffset() * 60000);
 
-        location.reload();
-    };
-});
-          
-        });
+                    document.getElementById("editRelease").value =
+                        local.toISOString().slice(0, 16);
 
-        function updateCountdown() {
-          const now = new Date();
+                    document.getElementById("editModal").style.display = "flex";
 
-          games.forEach((game) => {
-            const release = new Date(game.release);
+                    document.getElementById("saveEdit").onclick = async () => {
 
-            const diff = release - now;
+                        const {error} = await sb
+                            .from("games")
+                            .update({
+                                name: document.getElementById("editName").value,
+                                image: document.getElementById("editImage").value,
+                                release:
+                                    document.getElementById("editRelease").value +
+                                    ":00+07:00",
+                            })
+                            .eq("id", game.id);
 
-            if (diff <= 0) {
-              game.element.innerHTML = '<span class="out">OUT NOW!</span>';
+                        if (error) {
+                            alert(error.message);
+                            return;
+                        }
 
-              return;
+                        location.reload();
+                    };
+                });
+
+            });
+
+            function updateCountdown() {
+                const now = new Date();
+
+                games.forEach((game) => {
+                    const release = new Date(game.release);
+
+                    const diff = release - now;
+
+                    if (diff <= 0) {
+                        game.element.innerHTML = '<span class="out">OUT NOW!</span>';
+
+                        return;
+                    }
+
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+                    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+
+                    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+                    const seconds = Math.floor((diff / 1000) % 60);
+
+                    game.element.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                });
             }
 
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById("cancelEdit").onclick = () => {
+                document.getElementById("editModal").style.display = "none";
+            };
 
-            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            updateCountdown();
 
-            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            setInterval(updateCountdown, 1000);
 
-            const seconds = Math.floor((diff / 1000) % 60);
+            const now = new Date();
 
-            game.element.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-          });
-        }
+            const nextGame = games.find(game => new Date(game.release) > now);
 
-        document.getElementById("cancelEdit").onclick = () => {
-    document.getElementById("editModal").style.display = "none";
-};
+            if (nextGame) {
+                const card = nextGame.element.closest(".card");
 
-        updateCountdown();
+                card.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
 
-        setInterval(updateCountdown, 1000);
-
-        const now = new Date();
-
-const nextGame = games.find(game => new Date(game.release) > now);
-
-if (nextGame) {
-  const card = nextGame.element.closest(".card");
-
-  card.scrollIntoView({
-    behavior: "smooth",
-    block: "center"
-  });
-
-  card.style.border = "3px solid #00d4ff";
-}
-      })();
+                card.style.border = "3px solid #00d4ff";
+            }
+        })();
     </script>
-    
+
     <div id="editModal" class="modal">
-  <div class="modal-content">
-    <h2>Edit Game</h2>
+        <div class="modal-content">
+            <h2>Edit Game</h2>
 
-    <label>Game Name</label>
-    <input id="editName" type="text">
+            <label>Game Name</label>
+            <input id="editName" type="text">
 
-    <label>Image URL</label>
-    <input id="editImage" type="text">
+            <label>Image URL</label>
+            <input id="editImage" type="text">
 
-    <label>Release Date</label>
-    <input id="editRelease" type="datetime-local" step="60">
+            <label>Release Date</label>
+            <input id="editRelease" type="datetime-local" step="60">
 
-    <div class="modal-buttons">
-      <button id="cancelEdit">Cancel</button>
-      <button id="saveEdit">Save</button>
+            <div class="modal-buttons">
+                <button id="cancelEdit">Cancel</button>
+                <button id="saveEdit">Save</button>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-    
-  </body>
+
+</body>
+
 </html>
