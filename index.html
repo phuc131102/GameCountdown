@@ -78,7 +78,7 @@
 
         .top-bar {
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
             margin-bottom: 20px;
         }
 
@@ -202,6 +202,31 @@
             background: #555;
             color: white;
         }
+
+        .modal-content select {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #333;
+            color: white;
+        }
+
+        .out {
+            color: #00ff88;
+        }
+
+        .playing {
+            color: #ff9800;
+        }
+
+        .story {
+            color: #00bcd4;
+        }
+
+        .full {
+            color: #ffd700;
+        }
     </style>
 </head>
 
@@ -293,6 +318,9 @@
                     document.getElementById("editRelease").value =
                         local.toISOString().slice(0, 16);
 
+                    document.getElementById("editStatus").value =
+                        game.status ?? "countdown";
+
                     document.getElementById("editModal").style.display = "flex";
 
                     document.getElementById("saveEdit").onclick = async () => {
@@ -305,6 +333,7 @@
                                 release:
                                     document.getElementById("editRelease").value +
                                     ":00+07:00",
+                                status: document.getElementById("editStatus").value,
                             })
                             .eq("id", game.id);
 
@@ -328,7 +357,28 @@
                     const diff = release - now;
 
                     if (diff <= 0) {
-                        game.element.innerHTML = '<span class="out">OUT NOW!</span>';
+
+                        switch (game.status) {
+
+                            case "playing":
+                                game.element.innerHTML =
+                                    '<span class="playing">🎮 PLAYING</span>';
+                                break;
+
+                            case "story":
+                                game.element.innerHTML =
+                                    '<span class="story">📖 STORY COMPLETED</span>';
+                                break;
+
+                            case "100":
+                                game.element.innerHTML =
+                                    '<span class="full">🏆 PLATINUM 🏆</span>';
+                                break;
+
+                            default:
+                                game.element.innerHTML =
+                                    '<span class="out">OUT NOW!</span>';
+                        }
 
                         return;
                     }
@@ -382,6 +432,15 @@
 
             <label>Release Date</label>
             <input id="editRelease" type="datetime-local" step="60">
+
+            <label>Status</label>
+
+            <select id="editStatus">
+                <option value="countdown">Countdown</option>
+                <option value="playing">Playing</option>
+                <option value="story">Story Completed</option>
+                <option value="100">Platinum</option>
+            </select>
 
             <div class="modal-buttons">
                 <button id="cancelEdit">Cancel</button>
