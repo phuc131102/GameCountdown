@@ -236,7 +236,7 @@
 
 <body>
     <div class="top-bar">
-        <a href="admin.html" class="btn">➕ Add Game</a>
+        <button id="openAdd" class="btn">➕ Add Game</button>
     </div>
 
     <h1>Upcoming Games</h1>
@@ -412,6 +412,58 @@
                 document.getElementById("editModal").style.display = "none";
             };
 
+            document.getElementById("addImage").addEventListener("input", e => {
+
+                const img = document.getElementById("addPreview");
+
+                img.src = e.target.value;
+                img.style.display = "block";
+
+            });
+
+            document.getElementById("openAdd").onclick = () => {
+
+                document.getElementById("addModal").style.display = "flex";
+
+            };
+
+            document.getElementById("cancelAdd").onclick = () => {
+
+                document.getElementById("addModal").style.display = "none";
+
+            };
+
+            document.getElementById("saveAdd").onclick = async () => {
+
+                const game = {
+
+                    name: document.getElementById("addName").value,
+
+                    image: document.getElementById("addImage").value,
+
+                    release:
+                        document.getElementById("addRelease").value +
+                        ":00+07:00",
+
+                    status: "countdown"
+
+                };
+
+                const {error} = await sb
+                    .from("games")
+                    .insert(game);
+
+                if (error) {
+
+                    alert(error.message);
+                    return;
+
+                }
+
+                location.reload();
+
+            };
+
             updateCountdown();
 
             setInterval(updateCountdown, 1000);
@@ -460,6 +512,28 @@
             <div class="modal-buttons">
                 <button id="cancelEdit">Cancel</button>
                 <button id="saveEdit">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h2>Add Game</h2>
+
+            <label>Game Name</label>
+            <input id="addName" type="text">
+
+            <label>Image URL</label>
+            <input id="addImage" type="text">
+
+            <img id="addPreview" style="width:100%;margin-top:15px;border-radius:10px;display:none;">
+
+            <label>Release Date</label>
+            <input id="addRelease" type="datetime-local" step="60">
+
+            <div class="modal-buttons">
+                <button id="cancelAdd">Cancel</button>
+                <button id="saveAdd">Add Game</button>
             </div>
         </div>
     </div>
