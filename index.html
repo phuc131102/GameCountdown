@@ -283,8 +283,13 @@
     document.getElementById("editName").value = game.name;
     document.getElementById("editImage").value = game.image;
 
-    document.getElementById("editRelease").value =
-        game.release.substring(0,16);
+    const release = new Date(game.release);
+
+// Chuyển sang giờ địa phương trước khi đưa vào datetime-local
+const local = new Date(release.getTime() - release.getTimezoneOffset() * 60000);
+
+document.getElementById("editRelease").value =
+    local.toISOString().slice(0, 16);
 
     document.getElementById("editModal").style.display = "flex";
 
