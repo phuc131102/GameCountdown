@@ -313,7 +313,12 @@
 
           card.querySelector(".edit-btn").addEventListener("click", () => {
             document.getElementById("editName").value = game.name;
-            document.getElementById("editImage").value = game.image;
+            const preview = document.getElementById("editPreview");
+
+            preview.src = game.image;
+            preview.style.display = "block";
+
+            document.getElementById("editImage").value = "";
 
             const release = new Date(game.release);
             const now = new Date();
@@ -335,13 +340,36 @@
             document.getElementById("editModal").style.display = "flex";
 
             document.getElementById("saveEdit").onclick = async () => {
+              let image = game.image;
+
+              const file = document.getElementById("editImage").files[0];
+
+              if (file) {
+                const fileName = Date.now() + "-" + file.name;
+
+                const { error: uploadError } = await sb.storage
+                  .from("game-images")
+                  .upload(fileName, file);
+
+                if (uploadError) {
+                  alert(uploadError.message);
+                  return;
+                }
+
+                image = sb.storage.from("game-images").getPublicUrl(fileName)
+                  .data.publicUrl;
+              }
+
               const { error } = await sb
                 .from("games")
                 .update({
                   name: document.getElementById("editName").value,
-                  image: document.getElementById("editImage").value,
+
+                  image,
+
                   release:
                     document.getElementById("editRelease").value + ":00+07:00",
+
                   status: document.getElementById("editStatus").value,
                 })
                 .eq("id", game.id);
@@ -410,12 +438,24 @@
           document.getElementById("editModal").style.display = "none";
         };
 
-        document.getElementById("image").addEventListener("change", (e) => {
+        document.getElementById("addImage").addEventListener("change", (e) => {
           const file = e.target.files[0];
 
           if (!file) return;
 
-          const img = document.getElementById("preview");
+          const img = document.getElementById("addPreview");
+
+          img.src = URL.createObjectURL(file);
+
+          img.style.display = "block";
+        });
+
+        document.getElementById("editImage").addEventListener("change", (e) => {
+          const file = e.target.files[0];
+
+          if (!file) return;
+
+          const img = document.getElementById("editPreview");
 
           img.src = URL.createObjectURL(file);
 
@@ -438,7 +478,7 @@
             return;
           }
 
-          // Đặt tên file để tránh trùng
+          // Tạo tên file duy nhất
           const fileName = Date.now() + "-" + file.name;
 
           // Upload lên Storage
@@ -455,10 +495,10 @@
           const image = sb.storage.from("game-images").getPublicUrl(fileName)
             .data.publicUrl;
 
-          // Lưu vào bảng games
+          // Lưu database
           const game = {
             name: document.getElementById("addName").value,
-            image: image,
+            image,
             release: document.getElementById("addRelease").value + ":00+07:00",
             status: "countdown",
           };
@@ -501,10 +541,19 @@
         <label>Game Name</label>
         <input id="editName" type="text" />
 
-        <!-- <label>Image URL</label>
-        <input id="editImage" type="text" /> -->
         <label>Game Image</label>
+
         <input id="editImage" type="file" accept="image/*" />
+
+        <img
+          id="editPreview"
+          style="
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 10px;
+            display: none;
+          "
+        />
 
         <label>Release Date</label>
         <input id="editRelease" type="datetime-local" step="60" />
@@ -534,18 +583,16 @@
         <label>Game Name</label>
         <input id="addName" type="text" />
 
-        <!-- <label>Image URL</label>
-        <input id="addImage" type="text" /> -->
         <label>Game Image</label>
         <input id="addImage" type="file" accept="image/*" />
 
         <img
           id="addPreview"
           style="
-            display: none;
             width: 100%;
             margin-top: 15px;
             border-radius: 10px;
+            display: none;
           "
         />
 
