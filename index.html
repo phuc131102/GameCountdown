@@ -448,25 +448,35 @@
 
         .container {
           height: 80vh;
-          overflow-y: auto;
 
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
 
-          scroll-snap-type: y mandatory;
-          scroll-behavior: smooth;
+          overflow-x: auto;
+          overflow-y: hidden;
+
+          scroll-snap-type: x mandatory;
 
           -webkit-overflow-scrolling: touch;
+
+          /* gap: 20px;
+          padding: 0 20px; */
+        }
+
+        .container {
+          scrollbar-width: none;
+        }
+
+        .container::-webkit-scrollbar {
+          display: none;
         }
 
         .card {
-          flex: 0 0 80vh;
+          flex: 0 0 calc(100vw - 40px);
 
-          margin: 20vh 0;
-          height: 80vh;
+          height: 100%;
 
           scroll-snap-align: center;
-
           scroll-snap-stop: always;
         }
 
@@ -497,24 +507,6 @@
 
         .progress {
           margin-top: 20px;
-        }
-
-        .top-bar {
-          position: fixed;
-          top: 16px;
-          right: 16px;
-          z-index: 999;
-        }
-
-        #openAdd {
-          width: 60px;
-          height: 60px;
-          border-radius: 50%;
-          padding: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-size: 28px;
         }
       }
     </style>
@@ -893,7 +885,7 @@
           const card = nextGame.element.closest(".card");
 
           card.scrollIntoView({
-            behavior: "smooth",
+            behavior: "auto",
             block: "center",
           });
 
