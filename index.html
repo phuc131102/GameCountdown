@@ -440,27 +440,32 @@
       .container {
         height: 100vh;
         overflow-y: auto;
-        padding:25px 0;
+
         display: flex;
         flex-direction: column;
 
         scroll-snap-type: y mandatory;
         scroll-behavior: smooth;
 
-        -webkit-overflow-scrolling:touch;
+        -webkit-overflow-scrolling: touch;
       }
 
       .card {
         flex: 0 0 100vh;
-        height:calc(100vh - 50px);
+        /* height: 100vh; */
 
-        scroll-snap-align: start;
+        margin: 25px 0;
+        height: calc(100vh - 50px);
+
+        scroll-snap-align: center;
+
+        /* scroll-snap-align: start; */
         scroll-snap-stop: always;
       }
 
-      .card img{
-        height:50vh;
-    }
+      .card img {
+        height: 50vh;
+      }
 
       .info {
         flex: 1;
