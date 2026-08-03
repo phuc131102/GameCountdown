@@ -900,6 +900,18 @@
           card.style.border = "3px solid #00d4ff";
         }
       })();
+
+      document.addEventListener("gesturestart", function (e) {
+        e.preventDefault();
+      });
+
+      document.addEventListener("gesturechange", function (e) {
+        e.preventDefault();
+      });
+
+      document.addEventListener("gestureend", function (e) {
+        e.preventDefault();
+      });
     </script>
 
     <div id="editModal" class="modal">
