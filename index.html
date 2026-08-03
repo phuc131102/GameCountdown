@@ -440,6 +440,7 @@
 
       body {
         padding: 12px;
+        overflow-y:auto;
       }
 
       h1 {
@@ -449,11 +450,13 @@
       .container {
         grid-template-columns: 1fr;
         gap: 18px;
+        scroll-snap-type:y mandatory;
       }
 
       .card {
         width: 100%;
-        min-height: 92vh;
+        height:100vh;
+        height:100vh;
       }
 
       .card img {
