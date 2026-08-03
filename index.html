@@ -422,10 +422,6 @@
 
     }
 
-    .pagination {
-      display: none;
-    }
-
     /* Mobile */
 
     @media (max-width: 600px) {
@@ -452,12 +448,6 @@
         scroll-behavior: smooth;
 
         -webkit-overflow-scrolling: touch;
-
-        scrollbar-width: none;
-      }
-
-      .container::-webkit-scrollbar {
-        display: none;
       }
 
       .card {
@@ -520,45 +510,9 @@
         font-size: 28px;
       }
 
-      .pagination {
-        position: fixed;
-
-        right: 18px;
-        top: 50%;
-
-        transform: translateY(-50%);
-
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-
-        z-index: 999;
-      }
-
-      .pagination-dot {
-
-        width: 10px;
-        height: 10px;
-
-        border-radius: 50%;
-
-        background: #666;
-
-        transition: .3s;
-
-        cursor: pointer;
-      }
-
-      .pagination-dot.active {
-
-        background: #00d4ff;
-
-        transform: scale(1.5);
-
-        box-shadow: 0 0 10px #00d4ff;
-      }
-
     }
+
+    
   </style>
 </head>
 
@@ -942,50 +896,6 @@
         card.style.border = "3px solid #00d4ff";
       }
     })();
-
-    const cards = document.querySelectorAll(".card");
-    const pagination = document.getElementById("pagination");
-
-    cards.forEach((card, index) => {
-
-      const dot = document.createElement("div");
-
-      dot.className = "pagination-dot";
-
-      dot.onclick = () => {
-
-        card.scrollIntoView({
-          behavior: "smooth"
-        });
-
-      };
-
-      pagination.appendChild(dot);
-
-    });
-    const dots = document.querySelectorAll(".pagination-dot");
-
-    const observer = new IntersectionObserver((entries) => {
-
-      entries.forEach(entry => {
-
-        if (entry.isIntersecting) {
-
-          const index = [...cards].indexOf(entry.target);
-
-          dots.forEach(dot => dot.classList.remove("active"));
-
-          dots[index].classList.add("active");
-
-        }
-
-      });
-
-    }, {
-      threshold: 0.6
-    });
-
-    cards.forEach(card => observer.observe(card));
   </script>
 
   <div id="editModal" class="modal">
