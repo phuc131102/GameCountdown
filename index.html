@@ -645,13 +645,13 @@
                     <div class="progress-track">
                         <div
                             class="progress-fill"
-                            style="width:${percent}%">
+                            style="width:${percent.toFixed(2)}%">
                         </div>
                     </div>
 
                     <div class="progress-text">
                         <span>Release Progress</span>
-                        <span>${Math.round(percent)}%</span>
+                        <span>${Math.round(percent.toFixed(2))}%</span>
                     </div>
 
                 </div>
