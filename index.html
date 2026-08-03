@@ -1,535 +1,533 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Game Countdown</title>
-
-  <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon.png" />
-  <link rel="shortcut icon" href="./favicon/favicon.png" />
-  <link rel="apple-touch-icon" href="./favicon/favicon.png" />
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    body {
-      background: #111;
-      color: white;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      display: flex;
-      flex-direction: column;
-
-      background: #1c1c1c;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-      transition: 0.3s;
-
-      position: relative;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-    }
-
-    .card img {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      display: block;
-    }
-
-    .info {
-      flex: 1;
-
-      display: flex;
-      flex-direction: column;
-
-      padding: 15px;
-    }
-
-    .info h2 {
-      margin-bottom: 15px;
-      font-size: 24px;
-    }
-
-    .release {
-      color: #999;
-      margin-bottom: 15px;
-    }
-
-    .countdown {
-      display: flex;
-      gap: 10px;
-      margin-top: auto;
-      font-size: 22px;
-      font-weight: bold;
-      color: #00d4ff;
-    }
-
-    .flip-box {
-      flex: 1;
-      background: #242424;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
-    }
-
-    .flip-number {
-      font-size: 34px;
-      font-weight: 700;
-      text-align: center;
-      padding: 5px 0;
-      color: #00d4ff;
-      transition: 0.25s;
-    }
-
-    .flip-label {
-      text-align: center;
-      background: #171717;
-      color: #888;
-      padding: 6px 0;
-      font-size: 11px;
-      letter-spacing: 1px;
-    }
-
-    /*Proegress*/
-
-    .progress {
-      margin-top: 15px;
-    }
-
-    .progress-track {
-      width: 100%;
-      height: 10px;
-
-      background: #2d2d2d;
-      border-radius: 999px;
-      overflow: hidden;
-
-      box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.35);
-    }
-
-    .progress-fill {
-      height: 100%;
-      border-radius: 999px;
-
-      background: linear-gradient(90deg, #00d4ff, #00ff88);
-
-      transition: width 0.8s ease;
-    }
-
-    .progress-text {
-      margin-top: 8px;
-
-      display: flex;
-      justify-content: space-between;
-
-      font-size: 13px;
-      color: #999;
-    }
-
-    .out {
-      color: #00ff88;
-    }
-
-    /* Header */
-
-    .top-bar {
-      position: fixed;
-      right: 30px;
-      bottom: 30px;
-      z-index: 999;
-    }
-
-    .btn {
-      width: 64px;
-      height: 64px;
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      border-radius: 50%;
-
-      background: #00bfff;
-      color: white;
-      text-decoration: none;
-
-      font-size: 32px;
-      font-weight: bold;
-
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-
-      transition: 0.25s;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background: #009fd9;
-      transform: scale(1.08);
-    }
-
-    /* Card action buttons */
-
-    .card-actions {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-
-      display: flex;
-      gap: 8px;
-
-      opacity: 0;
-      transform: translateY(-5px);
-      transition: 0.2s;
-
-      z-index: 10;
-    }
-
-    .card:hover .card-actions {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .card-actions button {
-      width: 34px;
-      height: 34px;
-
-      border: none;
-      border-radius: 50%;
-
-      background: rgba(0, 0, 0, 0.75);
-      color: #fff;
-
-      font-size: 18px;
-      cursor: pointer;
-
-      transition: 0.2s;
-    }
-
-    .edit-btn:hover {
-      background: #ff9800;
-    }
-
-    .delete-btn:hover {
-      background: #e53935;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.6);
-
-      display: none;
-      justify-content: center;
-      align-items: center;
-
-      z-index: 999;
-    }
-
-    .modal-content {
-      width: 420px;
-      background: #1c1c1c;
-      padding: 25px;
-      border-radius: 15px;
-    }
-
-    .modal-content h2 {
-      margin-bottom: 20px;
-    }
-
-    .modal-content label {
-      display: block;
-      margin: 15px 0 5px;
-    }
-
-    .modal-content input {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #333;
-      color: white;
-    }
-
-    .modal-buttons {
-      margin-top: 20px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-    }
-
-    .modal-buttons button {
-      padding: 10px 18px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    #saveEdit {
-      background: #00bfff;
-      color: white;
-    }
-
-    #cancelEdit {
-      background: #555;
-      color: white;
-    }
-
-    .modal-content select {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #333;
-      color: white;
-    }
-
-    .backlog {
-      color: #b388ff;
-    }
-
-    .out {
-      color: #00ff88;
-    }
-
-    .playing {
-      color: #ff9800;
-    }
-
-    .story {
-      color: #00bcd4;
-    }
-
-    .full {
-      color: #ffd700;
-    }
-
-    /* Skeleton */
-
-    .skeleton-card {
-      background: #1c1c1c;
-      border-radius: 15px;
-      overflow: hidden;
-      animation: pulse 1.2s infinite;
-    }
-
-    .skeleton-img {
-      width: 100%;
-      aspect-ratio: 1/1;
-      background: #2d2d2d;
-    }
-
-    .skeleton-info {
-      padding: 20px;
-    }
-
-    .skeleton-line {
-      height: 18px;
-      background: #2d2d2d;
-      border-radius: 6px;
-      margin-bottom: 14px;
-    }
-
-    .skeleton-line.title {
-      width: 75%;
-      height: 28px;
-    }
-
-    .skeleton-line.short {
-      width: 45%;
-    }
-
-    @keyframes pulse {
-      0% {
-        opacity: 0.55;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Countdown</title>
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./favicon/favicon.png"
+    />
+    <link rel="shortcut icon" href="./favicon/favicon.png" />
+    <link rel="apple-touch-icon" href="./favicon/favicon.png" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
       }
-
-      50% {
-        opacity: 1;
-      }
-
-      100% {
-        opacity: 0.55;
-      }
-    }
-
-    .progress-track.urgent {
-      position: relative;
-      overflow: hidden;
-
-      box-shadow:
-        0 0 10px rgba(255, 152, 0, .5),
-        0 0 25px rgba(255, 152, 0, .35);
-    }
-
-    .progress-track.urgent .progress-fill {
-      background: linear-gradient(90deg,
-          #ff6a00,
-          #ffd54f,
-          #ff6a00);
-    }
-
-    .progress-track.urgent::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -40%;
-
-      width: 40%;
-      height: 100%;
-
-      background: linear-gradient(90deg,
-          transparent,
-          rgba(255, 255, 255, .9),
-          transparent);
-
-      transform: skewX(-25deg);
-
-      animation: progressShine 1.5s linear infinite;
-    }
-
-    @keyframes progressShine {
-
-      from {
-        left: -40%;
-      }
-
-      to {
-        left: 140%;
-      }
-
-    }
-
-    /* Mobile */
-
-    /* @media (max-width: 600px) {
 
       body {
-        padding: 12px;
-        margin: 0;
         background: #111;
-        overflow: hidden;
+        color: white;
+        padding: 20px;
       }
 
       h1 {
-        font-size: 26px;
+        text-align: center;
+        margin-bottom: 30px;
       }
 
       .container {
-        height: 100vh;
-        overflow-y: auto;
-
-        display: flex;
-        flex-direction: column;
-
-        scroll-snap-type: y mandatory;
-        scroll-behavior: smooth;
-
-        -webkit-overflow-scrolling: touch;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 20px;
       }
 
       .card {
-        flex: 0 0 80vh;
+        display: flex;
+        flex-direction: column;
 
-        margin: 20vh 0;
-        height: 80vh;
+        background: #1c1c1c;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        transition: 0.3s;
 
-        scroll-snap-align: center;
+        position: relative;
+      }
 
-        scroll-snap-stop: always;
+      .card:hover {
+        transform: translateY(-5px);
       }
 
       .card img {
-        height: 50vh;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        display: block;
       }
 
       .info {
         flex: 1;
-        padding: 18px;
+
+        display: flex;
+        flex-direction: column;
+
+        padding: 15px;
       }
 
       .info h2 {
-        font-size: 28px;
+        margin-bottom: 15px;
+        font-size: 24px;
       }
 
       .release {
-        font-size: 16px;
+        color: #999;
+        margin-bottom: 15px;
+      }
+
+      .countdown {
+        display: flex;
+        gap: 10px;
+        margin-top: auto;
+        font-size: 22px;
+        font-weight: bold;
+        color: #00d4ff;
+      }
+
+      .flip-box {
+        flex: 1;
+        background: #242424;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
       }
 
       .flip-number {
-        font-size: 36px;
+        font-size: 34px;
+        font-weight: 700;
+        text-align: center;
+        padding: 5px 0;
+        color: #00d4ff;
+        transition: 0.25s;
       }
 
       .flip-label {
-        font-size: 12px;
+        text-align: center;
+        background: #171717;
+        color: #888;
+        padding: 6px 0;
+        font-size: 11px;
+        letter-spacing: 1px;
       }
 
+      /*Proegress*/
+
       .progress {
-        margin-top: 20px;
+        margin-top: 15px;
       }
+
+      .progress-track {
+        width: 100%;
+        height: 10px;
+
+        background: #2d2d2d;
+        border-radius: 999px;
+        overflow: hidden;
+
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.35);
+      }
+
+      .progress-fill {
+        height: 100%;
+        border-radius: 999px;
+
+        background: linear-gradient(90deg, #00d4ff, #00ff88);
+
+        transition: width 0.8s ease;
+      }
+
+      .progress-text {
+        margin-top: 8px;
+
+        display: flex;
+        justify-content: space-between;
+
+        font-size: 13px;
+        color: #999;
+      }
+
+      .out {
+        color: #00ff88;
+      }
+
+      /* Header */
 
       .top-bar {
         position: fixed;
-        top: 16px;
-        right: 16px;
+        right: 30px;
+        bottom: 30px;
         z-index: 999;
       }
 
-      #openAdd {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        padding: 0;
+      .btn {
+        width: 64px;
+        height: 64px;
+
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 28px;
+
+        border-radius: 50%;
+
+        background: #00bfff;
+        color: white;
+        text-decoration: none;
+
+        font-size: 32px;
+        font-weight: bold;
+
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+        transition: 0.25s;
+        cursor: pointer;
       }
 
-    } */
+      .btn:hover {
+        background: #009fd9;
+        transform: scale(1.08);
+      }
 
-    
-  </style>
-</head>
+      /* Card action buttons */
 
-<body>
-  <div class="top-bar">
-    <button id="openAdd" class="btn" style="display: none">+</button>
-  </div>
+      .card-actions {
+        position: absolute;
+        top: 12px;
+        right: 12px;
 
-  <h1>Upcoming Games</h1>
+        display: flex;
+        gap: 8px;
 
-  <div class="container" id="games"></div>
-  <div id="pagination" class="pagination"></div>
-  <script>
-    const container = document.getElementById("games");
+        opacity: 0;
+        transform: translateY(-5px);
+        transition: 0.2s;
 
-    container.innerHTML = "";
+        z-index: 10;
+      }
 
-    for (let i = 0; i < 20; i++) {
-      container.innerHTML += `
+      .card:hover .card-actions {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .card-actions button {
+        width: 34px;
+        height: 34px;
+
+        border: none;
+        border-radius: 50%;
+
+        background: rgba(0, 0, 0, 0.75);
+        color: #fff;
+
+        font-size: 18px;
+        cursor: pointer;
+
+        transition: 0.2s;
+      }
+
+      .edit-btn:hover {
+        background: #ff9800;
+      }
+
+      .delete-btn:hover {
+        background: #e53935;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+
+        display: none;
+        justify-content: center;
+        align-items: center;
+
+        z-index: 999;
+      }
+
+      .modal-content {
+        width: 420px;
+        background: #1c1c1c;
+        padding: 25px;
+        border-radius: 15px;
+      }
+
+      .modal-content h2 {
+        margin-bottom: 20px;
+      }
+
+      .modal-content label {
+        display: block;
+        margin: 15px 0 5px;
+      }
+
+      .modal-content input {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        background: #333;
+        color: white;
+      }
+
+      .modal-buttons {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+
+      .modal-buttons button {
+        padding: 10px 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      #saveEdit {
+        background: #00bfff;
+        color: white;
+      }
+
+      #cancelEdit {
+        background: #555;
+        color: white;
+      }
+
+      .modal-content select {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        background: #333;
+        color: white;
+      }
+
+      .backlog {
+        color: #b388ff;
+      }
+
+      .out {
+        color: #00ff88;
+      }
+
+      .playing {
+        color: #ff9800;
+      }
+
+      .story {
+        color: #00bcd4;
+      }
+
+      .full {
+        color: #ffd700;
+      }
+
+      /* Skeleton */
+
+      .skeleton-card {
+        background: #1c1c1c;
+        border-radius: 15px;
+        overflow: hidden;
+        animation: pulse 1.2s infinite;
+      }
+
+      .skeleton-img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        background: #2d2d2d;
+      }
+
+      .skeleton-info {
+        padding: 20px;
+      }
+
+      .skeleton-line {
+        height: 18px;
+        background: #2d2d2d;
+        border-radius: 6px;
+        margin-bottom: 14px;
+      }
+
+      .skeleton-line.title {
+        width: 75%;
+        height: 28px;
+      }
+
+      .skeleton-line.short {
+        width: 45%;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.55;
+        }
+
+        50% {
+          opacity: 1;
+        }
+
+        100% {
+          opacity: 0.55;
+        }
+      }
+
+      .progress-track.urgent {
+        position: relative;
+        overflow: hidden;
+
+        box-shadow:
+          0 0 10px rgba(255, 152, 0, 0.5),
+          0 0 25px rgba(255, 152, 0, 0.35);
+      }
+
+      .progress-track.urgent .progress-fill {
+        background: linear-gradient(90deg, #ff6a00, #ffd54f, #ff6a00);
+      }
+
+      .progress-track.urgent::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -40%;
+
+        width: 40%;
+        height: 100%;
+
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.9),
+          transparent
+        );
+
+        transform: skewX(-25deg);
+
+        animation: progressShine 1.5s linear infinite;
+      }
+
+      @keyframes progressShine {
+        from {
+          left: -40%;
+        }
+
+        to {
+          left: 140%;
+        }
+      }
+
+      /* Mobile */
+
+      @media (max-width: 600px) {
+        body {
+          padding: 12px;
+          margin: 0;
+          background: #111;
+          overflow: hidden;
+        }
+
+        h1 {
+          font-size: 26px;
+          margin: 30px 0;
+        }
+
+        .container {
+          height: 80vh;
+          overflow-y: auto;
+
+          display: flex;
+          flex-direction: column;
+
+          scroll-snap-type: y mandatory;
+          scroll-behavior: smooth;
+
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .card {
+          flex: 0 0 80vh;
+
+          margin: 20vh 0;
+          height: 80vh;
+
+          scroll-snap-align: center;
+
+          scroll-snap-stop: always;
+        }
+
+        .card img {
+          height: 50vh;
+        }
+
+        .info {
+          flex: 1;
+          padding: 18px;
+        }
+
+        .info h2 {
+          font-size: 28px;
+        }
+
+        .release {
+          font-size: 16px;
+        }
+
+        .flip-number {
+          font-size: 36px;
+        }
+
+        .flip-label {
+          font-size: 12px;
+        }
+
+        .progress {
+          margin-top: 20px;
+        }
+
+        .top-bar {
+          position: fixed;
+          top: 16px;
+          right: 16px;
+          z-index: 999;
+        }
+
+        #openAdd {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="top-bar">
+      <button id="openAdd" class="btn" style="display: none">+</button>
+    </div>
+
+    <h1>Upcoming Games</h1>
+
+    <div class="container" id="games"></div>
+    <div id="pagination" class="pagination"></div>
+    <script>
+      const container = document.getElementById("games");
+
+      container.innerHTML = "";
+
+      for (let i = 0; i < 20; i++) {
+        container.innerHTML += `
         <div class="skeleton-card">
             <div class="skeleton-img"></div>
 
@@ -540,41 +538,41 @@
             </div>
         </div>
     `;
-    }
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script>
-    const sb = window.supabase.createClient(
-      "https://jwncunroufyxkibdutzv.supabase.co",
-
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3bmN1bnJvdWZ5eGtpYmR1dHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzMzI2ODEsImV4cCI6MjEwMDkwODY4MX0.vMHa7c3E9ePwo3g93teQ343pl4O3JBpOTONDNv0Nyuc",
-    );
-
-    (async () => {
-      const {
-        data: {session},
-      } = await sb.auth.getSession();
-
-      const isAdmin = session != null;
-      // Hiện nút Add nếu là admin
-      if (isAdmin) {
-        document.getElementById("openAdd").style.display = "flex";
       }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-      const {data: games, error} = await sb
-        .from("games")
-        .select("*")
-        .order("release");
+    <script>
+      const sb = window.supabase.createClient(
+        "https://jwncunroufyxkibdutzv.supabase.co",
 
-      // Xóa skeleton
-      container.innerHTML = "";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3bmN1bnJvdWZ5eGtpYmR1dHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzMzI2ODEsImV4cCI6MjEwMDkwODY4MX0.vMHa7c3E9ePwo3g93teQ343pl4O3JBpOTONDNv0Nyuc",
+      );
 
-      games.forEach((game) => {
-        const card = document.createElement("div");
-        card.className = "card";
+      (async () => {
+        const {
+          data: { session },
+        } = await sb.auth.getSession();
 
-        card.innerHTML = `
+        const isAdmin = session != null;
+        // Hiện nút Add nếu là admin
+        if (isAdmin) {
+          document.getElementById("openAdd").style.display = "flex";
+        }
+
+        const { data: games, error } = await sb
+          .from("games")
+          .select("*")
+          .order("release");
+
+        // Xóa skeleton
+        container.innerHTML = "";
+
+        games.forEach((game) => {
+          const card = document.createElement("div");
+          card.className = "card";
+
+          card.innerHTML = `
                         <div class="card-actions">
                     <button class="edit-btn" title="Edit">✏️</button>
                     <button class="delete-btn" title="Delete">&times;</button>
@@ -585,13 +583,13 @@
 
                             <div class="release">
                                 ${new Date(game.release).toLocaleString(
-          "en-GB",
-          {
-            timeZone: "Asia/Ho_Chi_Minh",
-            dateStyle: "full",
-            timeStyle: "short",
-          },
-        )}
+                                  "en-GB",
+                                  {
+                                    timeZone: "Asia/Ho_Chi_Minh",
+                                    dateStyle: "full",
+                                    timeStyle: "short",
+                                  },
+                                )}
                             </div>
 
                             <div class="countdown"></div>
@@ -599,160 +597,160 @@
                         </div>
                     `;
 
-        container.appendChild(card);
+          container.appendChild(card);
 
-        if (!isAdmin) {
-          card.querySelector(".card-actions").style.display = "none";
-        }
+          if (!isAdmin) {
+            card.querySelector(".card-actions").style.display = "none";
+          }
 
-        game.element = card.querySelector(".countdown");
-        game.element2 = card.querySelector(".countdown2");
+          game.element = card.querySelector(".countdown");
+          game.element2 = card.querySelector(".countdown2");
 
-        card
-          .querySelector(".delete-btn")
-          .addEventListener("click", async (e) => {
-            e.stopPropagation();
+          card
+            .querySelector(".delete-btn")
+            .addEventListener("click", async (e) => {
+              e.stopPropagation();
 
-            if (!confirm(`Delete "${game.name}"?`)) return;
+              if (!confirm(`Delete "${game.name}"?`)) return;
 
-            const {error} = await sb
-              .from("games")
-              .delete()
-              .eq("id", game.id);
+              const { error } = await sb
+                .from("games")
+                .delete()
+                .eq("id", game.id);
 
-            if (error) {
-              alert(error.message);
-              return;
-            }
-
-            card.remove();
-          });
-
-        card.querySelector(".edit-btn").addEventListener("click", () => {
-          document.getElementById("editName").value = game.name;
-          const preview = document.getElementById("editPreview");
-
-          preview.src = game.image;
-          preview.style.display = "block";
-
-          document.getElementById("editImage").value = "";
-
-          const release = new Date(game.release);
-          const now = new Date();
-
-          // Chuyển sang giờ địa phương trước khi đưa vào datetime-local
-          const local = new Date(
-            release.getTime() - release.getTimezoneOffset() * 60000,
-          );
-
-          document.getElementById("editRelease").value = local
-            .toISOString()
-            .slice(0, 16);
-
-          document.getElementById("editStatus").value = game.status ?? "out";
-
-          document.getElementById("statusGroup").style.display =
-            release <= now ? "block" : "none";
-
-          document.getElementById("editModal").style.display = "flex";
-
-          document.getElementById("saveEdit").onclick = async () => {
-            let image = game.image;
-
-            const file = document.getElementById("editImage").files[0];
-
-            if (file) {
-              const fileName = Date.now() + "-" + file.name;
-
-              const {error: uploadError} = await sb.storage
-                .from("game-images")
-                .upload(fileName, file);
-
-              if (uploadError) {
-                alert(uploadError.message);
+              if (error) {
+                alert(error.message);
                 return;
               }
 
-              image = sb.storage.from("game-images").getPublicUrl(fileName)
-                .data.publicUrl;
-            }
+              card.remove();
+            });
 
-            const {error} = await sb
-              .from("games")
-              .update({
-                name: document.getElementById("editName").value,
+          card.querySelector(".edit-btn").addEventListener("click", () => {
+            document.getElementById("editName").value = game.name;
+            const preview = document.getElementById("editPreview");
 
-                image,
+            preview.src = game.image;
+            preview.style.display = "block";
 
-                release:
-                  document.getElementById("editRelease").value + ":00+07:00",
+            document.getElementById("editImage").value = "";
 
-                status: document.getElementById("editStatus").value,
-              })
-              .eq("id", game.id);
+            const release = new Date(game.release);
+            const now = new Date();
 
-            if (error) {
-              alert(error.message);
+            // Chuyển sang giờ địa phương trước khi đưa vào datetime-local
+            const local = new Date(
+              release.getTime() - release.getTimezoneOffset() * 60000,
+            );
+
+            document.getElementById("editRelease").value = local
+              .toISOString()
+              .slice(0, 16);
+
+            document.getElementById("editStatus").value = game.status ?? "out";
+
+            document.getElementById("statusGroup").style.display =
+              release <= now ? "block" : "none";
+
+            document.getElementById("editModal").style.display = "flex";
+
+            document.getElementById("saveEdit").onclick = async () => {
+              let image = game.image;
+
+              const file = document.getElementById("editImage").files[0];
+
+              if (file) {
+                const fileName = Date.now() + "-" + file.name;
+
+                const { error: uploadError } = await sb.storage
+                  .from("game-images")
+                  .upload(fileName, file);
+
+                if (uploadError) {
+                  alert(uploadError.message);
+                  return;
+                }
+
+                image = sb.storage.from("game-images").getPublicUrl(fileName)
+                  .data.publicUrl;
+              }
+
+              const { error } = await sb
+                .from("games")
+                .update({
+                  name: document.getElementById("editName").value,
+
+                  image,
+
+                  release:
+                    document.getElementById("editRelease").value + ":00+07:00",
+
+                  status: document.getElementById("editStatus").value,
+                })
+                .eq("id", game.id);
+
+              if (error) {
+                alert(error.message);
+                return;
+              }
+
+              location.reload();
+            };
+          });
+        });
+
+        function updateCountdown() {
+          const now = new Date();
+
+          games.forEach((game) => {
+            const release = new Date(game.release);
+
+            const diff = release - now;
+            const urgent = diff <= 7 * 24 * 60 * 60 * 1000 && diff > 0;
+
+            if (diff <= 0) {
+              switch (game.status) {
+                case "backlog":
+                  game.element.innerHTML =
+                    '<span class="backlog">📚 BACKLOG</span>';
+                  break;
+
+                case "playing":
+                  game.element.innerHTML =
+                    '<span class="playing">⚔️ PLAYING</span>';
+                  break;
+
+                case "story_completed":
+                  game.element.innerHTML =
+                    '<span class="story">🌟 STORY COMPLETED</span>';
+                  break;
+
+                case "completed_100":
+                  game.element.innerHTML =
+                    '<span class="full">🏆 PLATINUM 🏆</span>';
+                  break;
+
+                default:
+                  game.element.innerHTML =
+                    '<span class="out">🔥 OUT NOW!</span>';
+              }
+
               return;
             }
 
-            location.reload();
-          };
-        });
-      });
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-      function updateCountdown() {
-        const now = new Date();
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
 
-        games.forEach((game) => {
-          const release = new Date(game.release);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
 
-          const diff = release - now;
-          const urgent = diff <= 7 * 24 * 60 * 60 * 1000 && diff > 0;
+            const seconds = Math.floor((diff / 1000) % 60);
 
-          if (diff <= 0) {
-            switch (game.status) {
-              case "backlog":
-                game.element.innerHTML =
-                  '<span class="backlog">📚 BACKLOG</span>';
-                break;
+            const total = release - new Date(game.created_at);
+            const elapsed = now - new Date(game.created_at);
+            const percent = Math.max(0, Math.min(100, (elapsed / total) * 100));
 
-              case "playing":
-                game.element.innerHTML =
-                  '<span class="playing">⚔️ PLAYING</span>';
-                break;
-
-              case "story_completed":
-                game.element.innerHTML =
-                  '<span class="story">🌟 STORY COMPLETED</span>';
-                break;
-
-              case "completed_100":
-                game.element.innerHTML =
-                  '<span class="full">🏆 PLATINUM 🏆</span>';
-                break;
-
-              default:
-                game.element.innerHTML =
-                  '<span class="out">🔥 OUT NOW!</span>';
-            }
-
-            return;
-          }
-
-          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-
-          const minutes = Math.floor((diff / (1000 * 60)) % 60);
-
-          const seconds = Math.floor((diff / 1000) % 60);
-
-          const total = release - new Date(game.created_at);
-          const elapsed = now - new Date(game.created_at);
-          const percent = Math.max(0, Math.min(100, (elapsed / total) * 100));
-
-          game.element.innerHTML = `
+            game.element.innerHTML = `
 
               <div class="flip-box">
                   <div class="flip-number">${days}</div>
@@ -776,7 +774,7 @@
 
               `;
 
-          game.element2.innerHTML = `
+            game.element2.innerHTML = `
                   <div class="progress">
 
                     <div class="progress-track ${urgent ? "urgent" : ""}">
@@ -793,174 +791,179 @@
 
                 </div>
             `;
-        });
-      }
-
-      document.getElementById("cancelEdit").onclick = () => {
-        document.getElementById("editModal").style.display = "none";
-      };
-
-      document.getElementById("addImage").addEventListener("change", (e) => {
-        const file = e.target.files[0];
-
-        if (!file) return;
-
-        const img = document.getElementById("addPreview");
-
-        img.src = URL.createObjectURL(file);
-
-        img.style.display = "block";
-      });
-
-      document.getElementById("editImage").addEventListener("change", (e) => {
-        const file = e.target.files[0];
-
-        if (!file) return;
-
-        const img = document.getElementById("editPreview");
-
-        img.src = URL.createObjectURL(file);
-
-        img.style.display = "block";
-      });
-
-      document.getElementById("openAdd").onclick = () => {
-        document.getElementById("addModal").style.display = "flex";
-      };
-
-      document.getElementById("cancelAdd").onclick = () => {
-        document.getElementById("addModal").style.display = "none";
-      };
-
-      document.getElementById("saveAdd").onclick = async () => {
-        const file = document.getElementById("addImage").files[0];
-
-        if (!file) {
-          alert("Please choose an image.");
-          return;
+          });
         }
 
-        // Tạo tên file duy nhất
-        const fileName = Date.now() + "-" + file.name;
-
-        // Upload lên Storage
-        const {error: uploadError} = await sb.storage
-          .from("game-images")
-          .upload(fileName, file);
-
-        if (uploadError) {
-          alert(uploadError.message);
-          return;
-        }
-
-        // Lấy URL public
-        const image = sb.storage.from("game-images").getPublicUrl(fileName)
-          .data.publicUrl;
-
-        // Lưu database
-        const game = {
-          name: document.getElementById("addName").value,
-          image,
-          release: document.getElementById("addRelease").value + ":00+07:00",
-          status: "countdown",
+        document.getElementById("cancelEdit").onclick = () => {
+          document.getElementById("editModal").style.display = "none";
         };
 
-        const {error} = await sb.from("games").insert(game);
+        document.getElementById("addImage").addEventListener("change", (e) => {
+          const file = e.target.files[0];
 
-        if (error) {
-          alert(error.message);
-          return;
-        }
+          if (!file) return;
 
-        location.reload();
-      };
+          const img = document.getElementById("addPreview");
 
-      updateCountdown();
+          img.src = URL.createObjectURL(file);
 
-      setInterval(updateCountdown, 1000);
-
-      const now = new Date();
-
-      const nextGame = games.find((game) => new Date(game.release) > now);
-
-      if (nextGame) {
-        const card = nextGame.element.closest(".card");
-
-        card.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
+          img.style.display = "block";
         });
 
-        card.style.border = "3px solid #00d4ff";
-      }
-    })();
-  </script>
+        document.getElementById("editImage").addEventListener("change", (e) => {
+          const file = e.target.files[0];
 
-  <div id="editModal" class="modal">
-    <div class="modal-content">
-      <h2>Edit Game</h2>
+          if (!file) return;
 
-      <label>Game Name</label>
-      <input id="editName" type="text" />
+          const img = document.getElementById("editPreview");
 
-      <label>Game Image</label>
+          img.src = URL.createObjectURL(file);
 
-      <input id="editImage" type="file" accept="image/*" />
+          img.style.display = "block";
+        });
 
-      <img id="editPreview" style="
+        document.getElementById("openAdd").onclick = () => {
+          document.getElementById("addModal").style.display = "flex";
+        };
+
+        document.getElementById("cancelAdd").onclick = () => {
+          document.getElementById("addModal").style.display = "none";
+        };
+
+        document.getElementById("saveAdd").onclick = async () => {
+          const file = document.getElementById("addImage").files[0];
+
+          if (!file) {
+            alert("Please choose an image.");
+            return;
+          }
+
+          // Tạo tên file duy nhất
+          const fileName = Date.now() + "-" + file.name;
+
+          // Upload lên Storage
+          const { error: uploadError } = await sb.storage
+            .from("game-images")
+            .upload(fileName, file);
+
+          if (uploadError) {
+            alert(uploadError.message);
+            return;
+          }
+
+          // Lấy URL public
+          const image = sb.storage.from("game-images").getPublicUrl(fileName)
+            .data.publicUrl;
+
+          // Lưu database
+          const game = {
+            name: document.getElementById("addName").value,
+            image,
+            release: document.getElementById("addRelease").value + ":00+07:00",
+            status: "countdown",
+          };
+
+          const { error } = await sb.from("games").insert(game);
+
+          if (error) {
+            alert(error.message);
+            return;
+          }
+
+          location.reload();
+        };
+
+        updateCountdown();
+
+        setInterval(updateCountdown, 1000);
+
+        const now = new Date();
+
+        const nextGame = games.find((game) => new Date(game.release) > now);
+
+        if (nextGame) {
+          const card = nextGame.element.closest(".card");
+
+          card.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+
+          card.style.border = "3px solid #00d4ff";
+        }
+      })();
+    </script>
+
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <h2>Edit Game</h2>
+
+        <label>Game Name</label>
+        <input id="editName" type="text" />
+
+        <label>Game Image</label>
+
+        <input id="editImage" type="file" accept="image/*" />
+
+        <img
+          id="editPreview"
+          style="
             width: 100%;
             margin-top: 15px;
             border-radius: 10px;
             display: none;
-          " />
+          "
+        />
 
-      <label>Release Date</label>
-      <input id="editRelease" type="datetime-local" step="60" />
+        <label>Release Date</label>
+        <input id="editRelease" type="datetime-local" step="60" />
 
-      <div id="statusGroup">
-        <label>Status</label>
+        <div id="statusGroup">
+          <label>Status</label>
 
-        <select id="editStatus">
-          <option value="backlog">📚 Backlog</option>
-          <option value="playing">⚔️ Playing</option>
-          <option value="story_completed">🌟 Story Completed</option>
-          <option value="completed_100">🏆 Platinum 🏆</option>
-        </select>
-      </div>
+          <select id="editStatus">
+            <option value="backlog">📚 Backlog</option>
+            <option value="playing">⚔️ Playing</option>
+            <option value="story_completed">🌟 Story Completed</option>
+            <option value="completed_100">🏆 Platinum 🏆</option>
+          </select>
+        </div>
 
-      <div class="modal-buttons">
-        <button id="cancelEdit">Cancel</button>
-        <button id="saveEdit">Save</button>
+        <div class="modal-buttons">
+          <button id="cancelEdit">Cancel</button>
+          <button id="saveEdit">Save</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div id="addModal" class="modal">
-    <div class="modal-content">
-      <h2>Add Game</h2>
+    <div id="addModal" class="modal">
+      <div class="modal-content">
+        <h2>Add Game</h2>
 
-      <label>Game Name</label>
-      <input id="addName" type="text" />
+        <label>Game Name</label>
+        <input id="addName" type="text" />
 
-      <label>Game Image</label>
-      <input id="addImage" type="file" accept="image/*" />
+        <label>Game Image</label>
+        <input id="addImage" type="file" accept="image/*" />
 
-      <img id="addPreview" style="
+        <img
+          id="addPreview"
+          style="
             width: 100%;
             margin-top: 15px;
             border-radius: 10px;
             display: none;
-          " />
+          "
+        />
 
-      <label>Release Date</label>
-      <input id="addRelease" type="datetime-local" step="60" />
+        <label>Release Date</label>
+        <input id="addRelease" type="datetime-local" step="60" />
 
-      <div class="modal-buttons">
-        <button id="cancelAdd">Cancel</button>
-        <button id="saveAdd">Add Game</button>
+        <div class="modal-buttons">
+          <button id="cancelAdd">Cancel</button>
+          <button id="saveAdd">Add Game</button>
+        </div>
       </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>
