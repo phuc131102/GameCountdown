@@ -422,25 +422,15 @@
 
     }
 
-    @media (max-width: 900px) {
-
-      body {
-        padding: 20px;
-      }
-
-      .container {
-        grid-template-columns: 1fr;
-      }
-
-    }
-
     /* Mobile */
 
     @media (max-width: 600px) {
 
       body {
         padding: 12px;
-        overflow-y:auto;
+        margin: 0;
+        background: #111;
+        overflow: hidden;
       }
 
       h1 {
@@ -448,20 +438,29 @@
       }
 
       .container {
-        grid-template-columns: 1fr;
-        gap: 18px;
-        scroll-snap-type:y mandatory;
+        height: 100vh;
+        overflow-y: auto;
+
+        display: flex;
+        flex-direction: column;
+
+        scroll-snap-type: y mandatory;
+        scroll-behavior: smooth;
+
+        -webkit-overflow-scrolling:touch;
       }
 
       .card {
-        width: 100%;
-        height:100vh;
-        height:100vh;
+        flex: 0 0 100vh;
+        height: 100vh;
+
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
       }
 
-      .card img {
-        height: 48vh;
-      }
+      .card img{
+        height:50vh;
+    }
 
       .info {
         flex: 1;
