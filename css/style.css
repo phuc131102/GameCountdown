@@ -1,0 +1,500 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+html,
+body {
+    touch-action: manipulation;
+}
+
+body {
+    background: #111;
+    color: white;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+
+    background: #1c1c1c;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    transition: 0.3s;
+
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+}
+
+.info {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 15px;
+}
+
+.info h2 {
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.release {
+    color: #999;
+    margin-bottom: 15px;
+}
+
+.countdown {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+    font-size: 22px;
+    font-weight: bold;
+    color: #00d4ff;
+}
+
+.flip-box {
+    flex: 1;
+    background: #242424;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
+}
+
+.flip-number {
+    font-size: 34px;
+    font-weight: 700;
+    text-align: center;
+    padding: 5px 0;
+    color: #00d4ff;
+    transition: 0.25s;
+}
+
+.flip-label {
+    text-align: center;
+    background: #171717;
+    color: #888;
+    padding: 6px 0;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+/*Proegress*/
+
+.progress {
+    margin-top: 15px;
+}
+
+.progress-track {
+    width: 100%;
+    height: 10px;
+
+    background: #2d2d2d;
+    border-radius: 999px;
+    overflow: hidden;
+
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.35);
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 999px;
+
+    background: linear-gradient(90deg, #00d4ff, #00ff88);
+
+    transition: width 0.8s ease;
+}
+
+.progress-text {
+    margin-top: 8px;
+
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 13px;
+    color: #999;
+}
+
+.out {
+    color: #00ff88;
+}
+
+/* Header */
+
+.top-bar {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    z-index: 999;
+}
+
+.btn {
+    width: 64px;
+    height: 64px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
+    background: #00bfff;
+    color: white;
+    text-decoration: none;
+
+    font-size: 32px;
+    font-weight: bold;
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+    transition: 0.25s;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #009fd9;
+    transform: scale(1.08);
+}
+
+/* Card action buttons */
+
+.card-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    display: flex;
+    gap: 8px;
+
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: 0.2s;
+
+    z-index: 10;
+}
+
+.card:hover .card-actions {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card-actions button {
+    width: 34px;
+    height: 34px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+
+    font-size: 18px;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.edit-btn:hover {
+    background: #ff9800;
+}
+
+.delete-btn:hover {
+    background: #e53935;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
+}
+
+.modal-content {
+    width: 420px;
+    background: #1c1c1c;
+    padding: 25px;
+    border-radius: 15px;
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+}
+
+.modal-content label {
+    display: block;
+    margin: 15px 0 5px;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #333;
+    color: white;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-buttons button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#saveEdit {
+    background: #00bfff;
+    color: white;
+}
+
+#cancelEdit {
+    background: #555;
+    color: white;
+}
+
+.modal-content select {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #333;
+    color: white;
+}
+
+.backlog {
+    color: #b388ff;
+}
+
+.out {
+    color: #00ff88;
+}
+
+.playing {
+    color: #ff9800;
+}
+
+.story {
+    color: #00bcd4;
+}
+
+.full {
+    color: #ffd700;
+}
+
+/* Skeleton */
+
+.skeleton-card {
+    background: #1c1c1c;
+    border-radius: 15px;
+    overflow: hidden;
+    animation: pulse 1.2s infinite;
+}
+
+.skeleton-img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: #2d2d2d;
+}
+
+.skeleton-info {
+    padding: 20px;
+}
+
+.skeleton-line {
+    height: 18px;
+    background: #2d2d2d;
+    border-radius: 6px;
+    margin-bottom: 14px;
+}
+
+.skeleton-line.title {
+    width: 75%;
+    height: 28px;
+}
+
+.skeleton-line.short {
+    width: 45%;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.55;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.55;
+    }
+}
+
+.progress-track.urgent {
+    position: relative;
+    overflow: hidden;
+
+    box-shadow:
+        0 0 10px rgba(255, 152, 0, 0.5),
+        0 0 25px rgba(255, 152, 0, 0.35);
+}
+
+.progress-track.urgent .progress-fill {
+    background: linear-gradient(90deg, #ff6a00, #ffd54f, #ff6a00);
+}
+
+.progress-track.urgent::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -40%;
+
+    width: 40%;
+    height: 100%;
+
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.9),
+            transparent);
+
+    transform: skewX(-25deg);
+
+    animation: progressShine 1.5s linear infinite;
+}
+
+@keyframes progressShine {
+    from {
+        left: -40%;
+    }
+
+    to {
+        left: 140%;
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+    body {
+        padding: 12px;
+        margin: 0;
+        background: #111;
+        overflow: hidden;
+    }
+
+    h1 {
+        font-size: 26px;
+        margin: 30px 0;
+    }
+
+    .container {
+        height: 80vh;
+
+        display: flex;
+        flex-direction: row;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        scroll-snap-type: x mandatory;
+
+        -webkit-overflow-scrolling: touch;
+
+        /* gap: 20px;
+          padding: 0 20px; */
+    }
+
+    .container {
+        scrollbar-width: none;
+    }
+
+    .container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .card {
+        flex: 0 0 calc(100vw - 40px);
+
+        height: 100%;
+
+        scroll-snap-align: center;
+        scroll-snap-stop: always;
+    }
+
+    .card:hover {
+        transform: none;
+    }
+
+    .card img {
+        height: 50vh;
+    }
+
+    .info {
+        flex: 1;
+        padding: 18px;
+    }
+
+    .info h2 {
+        font-size: 28px;
+    }
+
+    .release {
+        font-size: 16px;
+    }
+
+    .flip-number {
+        font-size: 36px;
+    }
+
+    .flip-label {
+        font-size: 12px;
+    }
+
+    .progress {
+        margin-top: 20px;
+    }
+}
+
+.image-preview {
+    width: 100%;
+    margin-top: 15px;
+    border-radius: 10px;
+    display: none;
+}
