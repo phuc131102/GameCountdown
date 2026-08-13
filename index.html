@@ -2,42 +2,62 @@
 <html lang="en">
 
 <head>
+  <!-- Document metadata / encoding / responsive viewport -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Game Countdown</title>
 
+  <!-- Favicon links shown in browser tabs / touch icons -->
   <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon.png" />
   <link rel="shortcut icon" href="./favicon/favicon.png" />
   <link rel="apple-touch-icon" href="./favicon/favicon.png" />
+
+  <!-- Main stylesheet for layout and styles -->
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 
 <body>
+  <!-- Top bar containing controls (e.g. open add modal) -->
   <div class="top-bar">
+    <!-- Button to open the "Add Game" modal (hidden by default) -->
     <button id="openAdd" class="btn" style="display: none">+</button>
   </div>
 
+  <!-- Page heading -->
   <h1>Upcoming Games</h1>
 
+  <!-- Container where game cards will be injected by JS -->
   <div class="container" id="games"></div>
+
+  <!-- Pagination controls inserted/managed by JS -->
   <div id="pagination" class="pagination"></div>
+
+  <!-- Supabase client library (used for data/storage if applicable) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Edit Game modal:
+         Contains form fields for editing a game's name, image, release date and status.
+         Hidden/shown by JS. -->
   <div id="editModal" class="modal">
     <div class="modal-content">
       <h2>Edit Game</h2>
 
+      <!-- Text input for game title -->
       <label>Game Name</label>
       <input id="editName" type="text" />
 
+      <!-- File input to upload/replace game image -->
       <label>Game Image</label>
-
       <input id="editImage" type="file" accept="image/*" />
 
+      <!-- Preview element to show selected/current image -->
       <img id="editPreview" class="image-preview" />
 
+      <!-- Datetime input for release date/time -->
       <label>Release Date</label>
       <input id="editRelease" type="datetime-local" step="60" />
 
+      <!-- Status select shown when editing (e.g., backlog, playing, completed) -->
       <div id="statusGroup">
         <label>Status</label>
 
@@ -49,6 +69,7 @@
         </select>
       </div>
 
+      <!-- Modal action buttons -->
       <div class="modal-buttons">
         <button id="cancelEdit">Cancel</button>
         <button id="saveEdit">Save</button>
@@ -56,27 +77,36 @@
     </div>
   </div>
 
+  <!-- Add Game modal:
+         Similar inputs as edit modal but used to create a new game entry. -->
   <div id="addModal" class="modal">
     <div class="modal-content">
       <h2>Add Game</h2>
 
+      <!-- Text input for new game name -->
       <label>Game Name</label>
       <input id="addName" type="text" />
 
+      <!-- File input for new game image -->
       <label>Game Image</label>
       <input id="addImage" type="file" accept="image/*" />
 
+      <!-- Preview for the selected image before upload -->
       <img id="addPreview" class="image-preview" />
 
+      <!-- Datetime input for new game's release -->
       <label>Release Date</label>
       <input id="addRelease" type="datetime-local" step="60" />
 
+      <!-- Add modal action buttons -->
       <div class="modal-buttons">
         <button id="cancelAdd">Cancel</button>
         <button id="saveAdd">Add Game</button>
       </div>
     </div>
   </div>
+
+  <!-- Main JavaScript that handles rendering, events, modals, and data -->
   <script src="./js/main.js"></script>
 </body>
 
