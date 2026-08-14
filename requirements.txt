@@ -1,0 +1,4 @@
+python-dotenv
+rapidfuzz
+supabase
+psnawp-api
