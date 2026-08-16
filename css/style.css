@@ -3,900 +3,1215 @@
    ========================================================= */
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 html,
 body {
-    touch-action: manipulation;
+  touch-action: manipulation;
 }
 
 body {
-    background: #111;
-    color: white;
-    padding: 20px;
+  background: #111;
+  color: white;
+  padding: 20px;
 }
 
 h1 {
-    text-align: center;
-    margin-bottom: 30px;
+  text-align: center;
+  margin-bottom: 30px;
 }
-
 
 /* =========================================================
    2) LAYOUT / GRID
    ========================================================= */
 
 .container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
 }
-
 
 /* =========================================================
    3) CARD / CONTENT
    ========================================================= */
 
 .card {
-    display: flex;
-    flex-direction: column;
-    background: #1c1c1c;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    transition: 0.3s;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #1c1c1c;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  transition: 0.3s;
+  position: relative;
 }
 
 .card:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 }
 
 .card img {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
 }
 
 .info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
 }
 
 .info h2 {
-    margin-bottom: 15px;
-    font-size: 24px;
-    text-align: center;
+  margin-bottom: 15px;
+  font-size: 24px;
+  text-align: center;
 }
 
 .release {
-    color: #999;
-    margin-bottom: 15px;
-    text-align: center;
+  color: #999;
+  margin-bottom: 15px;
+  text-align: center;
 }
-
 
 /* =========================================================
    4) COUNTDOWN
    ========================================================= */
 
 .countdown {
-    display: flex;
-    gap: 10px;
-    margin-top: auto;
-    font-size: 22px;
-    font-weight: bold;
-    color: #00d4ff;
-    justify-content: center;
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  font-size: 22px;
+  font-weight: bold;
+  color: #00d4ff;
+  justify-content: center;
 }
 
 .flip-box {
-    flex: 1;
-    background: #242424;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
+  flex: 1;
+  background: #242424;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
 }
 
 .flip-number {
-    font-size: 34px;
-    font-weight: 700;
-    text-align: center;
-    padding: 5px 0;
-    color: #00d4ff;
-    transition: 0.25s;
+  font-size: 34px;
+  font-weight: 700;
+  text-align: center;
+  padding: 5px 0;
+  color: #00d4ff;
+  transition: 0.25s;
 }
 
 .flip-label {
-    text-align: center;
-    background: #171717;
-    color: #888;
-    padding: 6px 0;
-    font-size: 11px;
-    letter-spacing: 1px;
+  text-align: center;
+  background: #171717;
+  color: #888;
+  padding: 6px 0;
+  font-size: 11px;
+  letter-spacing: 1px;
 }
-
 
 /* =========================================================
    5) RELEASE PROGRESS
    ========================================================= */
 
 .progress {
-    margin-top: 15px;
+  margin-top: 15px;
 }
 
 .progress-track {
-    width: 100%;
-    height: 10px;
-    background: #2d2d2d;
-    border-radius: 999px;
-    overflow: hidden;
-    box-shadow:
-        inset 0 0 6px rgba(0, 0, 0, 0.35);
+  width: 100%;
+  height: 10px;
+  background: #2d2d2d;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.35);
 }
 
 .progress-fill {
-    height: 100%;
-    border-radius: 999px;
-    background: linear-gradient(90deg,
-            #00d4ff,
-            #00ff88);
-    transition: width 0.8s ease;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #00d4ff, #00ff88);
+  transition: width 0.8s ease;
 }
 
 .progress-text {
-    margin-top: 8px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    color: #999;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #999;
 }
-
 
 /* =========================================================
    6) URGENT RELEASE
    ========================================================= */
 
 .progress-track.urgent {
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 
-    box-shadow:
-        0 0 10px rgba(255, 152, 0, 0.5),
-        0 0 25px rgba(255, 152, 0, 0.35);
+  box-shadow:
+    0 0 10px rgba(255, 152, 0, 0.5),
+    0 0 25px rgba(255, 152, 0, 0.35);
 }
 
 .progress-track.urgent .progress-fill {
-    background: linear-gradient(90deg,
-            #ff6a00,
-            #ffd54f,
-            #ff6a00);
+  background: linear-gradient(90deg, #ff6a00, #ffd54f, #ff6a00);
 }
 
 .progress-track.urgent::after {
-    content: "";
+  content: "";
 
-    position: absolute;
+  position: absolute;
 
-    top: 0;
-    left: -40%;
+  top: 0;
+  left: -40%;
 
-    width: 40%;
-    height: 100%;
+  width: 40%;
+  height: 100%;
 
-    background: linear-gradient(90deg,
-            transparent,
-            rgba(255, 255, 255, 0.9),
-            transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.9),
+    transparent
+  );
 
-    transform: skewX(-25deg);
+  transform: skewX(-25deg);
 
-    animation:
-        progressShine 1.5s linear infinite;
+  animation: progressShine 1.5s linear infinite;
 }
 
 @keyframes progressShine {
+  from {
+    left: -40%;
+  }
 
-    from {
-        left: -40%;
-    }
-
-    to {
-        left: 140%;
-    }
+  to {
+    left: 140%;
+  }
 }
-
 
 /* =========================================================
    7) STATUS BADGES
    ========================================================= */
 
 .out {
-    color: #00ff88;
+  color: #00ff88;
 }
 
 .backlog {
-    color: #b388ff;
+  color: #b388ff;
 }
 
 .playing {
-    color: #ff9800;
+  color: #ff9800;
 }
 
 .story {
-    color: #00bcd4;
+  color: #00bcd4;
 }
 
 .full {
-    color: #ffd700;
+  color: #ffd700;
 }
-
 
 /* =========================================================
    8) TROPHY SECTION
    ========================================================= */
 
 .trophy-container {
-    width: 100%;
+  width: 100%;
 }
-
 
 /* Main trophy box */
 
 .trophy-section {
-    margin-top: 18px;
-    padding: 15px;
+  margin-top: 18px;
+  padding: 15px;
 
-    height: 180px;
+  height: 180px;
 
-    background: #171717;
+  background: #171717;
 
-    border: 1px solid #2c2c2c;
-    border-radius: 12px;
+  border: 1px solid #2c2c2c;
+  border-radius: 12px;
 
-    box-shadow:
-        inset 0 0 15px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.25);
 }
-
 
 /* Trophy header */
 
 .trophy-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-    margin-bottom: 13px;
+  margin-bottom: 13px;
 }
 
 .trophy-title {
-    font-size: 14px;
-    font-weight: 700;
+  font-size: 14px;
+  font-weight: 700;
 
-    letter-spacing: 1px;
+  letter-spacing: 1px;
 
-    color: #f5f5f5;
+  color: #f5f5f5;
 }
 
 .trophy-percent {
-    font-size: 14px;
-    font-weight: 700;
+  font-size: 14px;
+  font-weight: 700;
 
-    color: #00ff88;
+  color: #00ff88;
 }
-
 
 /* Trophy grid */
 
 .trophy-grid {
-    display: grid;
+  display: grid;
 
-    grid-template-columns:
-        repeat(4, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 
-    gap: 5px;
+  gap: 5px;
 }
-
 
 /* Individual trophy */
 
 .trophy-item {
-    display: flex;
+  display: flex;
 
-    flex-direction: column;
+  flex-direction: column;
 
-    align-items: center;
-    justify-content: center;
+  align-items: center;
+  justify-content: center;
 
-    min-width: 0;
+  min-width: 0;
 
-    padding: 9px 5px;
+  padding: 9px 5px;
 
-    background: #222;
+  background: #222;
 
-    border-radius: 9px;
+  border-radius: 9px;
 
-    border: 1px solid #2d2d2d;
+  border: 1px solid #2d2d2d;
 
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .trophy-item:hover {
-    transform: translateY(-2px);
-    background: #292929;
+  transform: translateY(-2px);
+  background: #292929;
 }
-
 
 /* Trophy icon */
 
 .trophy-icon {
-    font-size: 22px;
-    line-height: 1;
+  font-size: 22px;
+  line-height: 1;
 
-    margin-bottom: 6px;
+  margin-bottom: 6px;
 }
-
 
 /* Trophy name */
 
 .trophy-name {
-    font-size: 9px;
+  font-size: 9px;
 
-    letter-spacing: 0.5px;
+  letter-spacing: 0.5px;
 
-    color: #888;
+  color: #888;
 
-    margin-bottom: 4px;
+  margin-bottom: 4px;
 
-    white-space: nowrap;
+  white-space: nowrap;
 }
-
 
 /* Trophy count */
 
 .trophy-count {
-    font-size: 13px;
+  font-size: 13px;
 
-    font-weight: 700;
+  font-weight: 700;
 
-    color: white;
+  color: white;
 
-    white-space: nowrap;
+  white-space: nowrap;
 }
-
 
 /* Trophy type accents */
 
 .trophy-item.platinum {
-    box-shadow:
-        inset 0 -2px 0 #d9d9d9;
+  box-shadow: inset 0 -2px 0 #d9d9d9;
 }
 
 .trophy-item.gold {
-    box-shadow:
-        inset 0 -2px 0 #ffd700;
+  box-shadow: inset 0 -2px 0 #ffd700;
 }
 
 .trophy-item.silver {
-    box-shadow:
-        inset 0 -2px 0 #bfc7d5;
+  box-shadow: inset 0 -2px 0 #bfc7d5;
 }
 
 .trophy-item.bronze {
-    box-shadow:
-        inset 0 -2px 0 #cd7f32;
+  box-shadow: inset 0 -2px 0 #cd7f32;
 }
-
 
 /* Trophy progress */
 
 .trophy-progress {
-    margin-top: 14px;
+  margin-top: 14px;
 }
 
 .trophy-progress-track {
-    width: 100%;
-    height: 8px;
+  width: 100%;
+  height: 8px;
 
-    background: #2d2d2d;
+  background: #2d2d2d;
 
-    border-radius: 999px;
+  border-radius: 999px;
 
-    overflow: hidden;
+  overflow: hidden;
 
-    box-shadow:
-        inset 0 0 5px rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.45);
 }
 
 .trophy-progress-fill {
-    height: 100%;
+  height: 100%;
 
-    min-width: 0;
+  min-width: 0;
 
-    border-radius: 999px;
+  border-radius: 999px;
 
-    background:
-        linear-gradient(90deg,
-            #ffd700,
-            #00ff88);
+  background: linear-gradient(90deg, #ffd700, #00ff88);
 
-    transition:
-        width 0.8s ease;
+  transition: width 0.8s ease;
 }
 
 .trophy-progress-text {
-    display: flex;
+  display: flex;
 
-    justify-content: space-between;
+  justify-content: space-between;
 
-    margin-top: 7px;
+  margin-top: 7px;
 
-    font-size: 11px;
+  font-size: 11px;
 
-    color: #888;
+  color: #888;
 }
-
 
 /* No trophy data */
 
 .trophy-unavailable {
-    opacity: 0.7;
+  opacity: 0.7;
 }
 
 .trophy-sync-status {
-    font-size: 11px;
-    color: #888;
+  font-size: 11px;
+  color: #888;
 }
 
 .trophy-empty {
-    font-size: 12px;
-    color: #777;
-    text-align: center;
+  font-size: 12px;
+  color: #777;
+  text-align: center;
 
-    padding: 8px 0 2px;
+  padding: 8px 0 2px;
 }
-
 
 /* =========================================================
    9) FLOATING ADD BUTTON
    ========================================================= */
 
 .top-bar {
-    position: fixed;
+  position: fixed;
 
-    right: 30px;
-    bottom: 30px;
+  right: 30px;
+  bottom: 30px;
 
-    z-index: 999;
+  z-index: 999;
 }
 
 .btn {
-    width: 64px;
-    height: 64px;
+  width: 64px;
+  height: 64px;
 
-    display: flex;
+  display: flex;
 
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 
-    border-radius: 50%;
+  border-radius: 50%;
 
-    background: #00bfff;
-    color: white;
+  background: #00bfff;
+  color: white;
 
-    text-decoration: none;
+  text-decoration: none;
 
-    font-size: 32px;
-    font-weight: bold;
+  font-size: 32px;
+  font-weight: bold;
 
-    box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 
-    transition: 0.25s;
+  transition: 0.25s;
 
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .btn:hover {
-    background: #009fd9;
-    transform: scale(1.08);
+  background: #009fd9;
+  transform: scale(1.08);
 }
-
 
 /* =========================================================
    10) CARD ACTION BUTTONS
    ========================================================= */
 
 .card-actions {
-    position: absolute;
+  position: absolute;
 
-    top: 12px;
-    right: 12px;
+  top: 12px;
+  right: 12px;
 
-    display: flex;
+  display: flex;
 
-    gap: 8px;
+  gap: 8px;
 
-    opacity: 0;
+  opacity: 0;
 
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 
-    transition: 0.2s;
+  transition: 0.2s;
 
-    z-index: 10;
+  z-index: 10;
 }
 
 .card:hover .card-actions {
-    opacity: 1;
-    transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .card-actions button {
-    width: 34px;
-    height: 34px;
+  width: 34px;
+  height: 34px;
 
-    border: none;
+  border: none;
 
-    border-radius: 50%;
+  border-radius: 50%;
 
-    background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.75);
 
-    color: #fff;
+  color: #fff;
 
-    font-size: 18px;
+  font-size: 18px;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition: 0.2s;
+  transition: 0.2s;
 }
 
 .edit-btn:hover {
-    background: #ff9800;
+  background: #ff9800;
 }
 
 .delete-btn:hover {
-    background: #e53935;
+  background: #e53935;
 }
-
 
 /* =========================================================
    11) MODAL / FORMS
    ========================================================= */
 
 .modal {
-    position: fixed;
+  position: fixed;
 
-    inset: 0;
+  inset: 0;
 
-    background:
-        rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.6);
 
-    display: none;
+  display: none;
 
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 
-    z-index: 999;
+  z-index: 999;
 }
 
 .modal-content {
-    width: 420px;
+  width: 420px;
 
-    background: #1c1c1c;
+  background: #1c1c1c;
 
-    padding: 25px;
+  padding: 25px;
 
-    border-radius: 15px;
+  border-radius: 15px;
 }
 
 .modal-content h2 {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .modal-content label {
-    display: block;
+  display: block;
 
-    margin:
-        15px 0 5px;
+  margin: 15px 0 5px;
 }
 
 .modal-content input,
 .modal-content select {
-    width: 100%;
+  width: 100%;
 
-    padding: 10px;
+  padding: 10px;
 
-    border: none;
+  border: none;
 
-    border-radius: 8px;
+  border-radius: 8px;
 
-    background: #333;
+  background: #333;
 
-    color: white;
+  color: white;
 }
 
 .modal-buttons {
-    margin-top: 20px;
+  margin-top: 20px;
 
-    display: flex;
+  display: flex;
 
-    justify-content: flex-end;
+  justify-content: flex-end;
 
-    gap: 10px;
+  gap: 10px;
 }
 
 .modal-buttons button {
-    padding: 10px 18px;
+  padding: 10px 18px;
 
-    border: none;
+  border: none;
 
-    border-radius: 8px;
+  border-radius: 8px;
 
-    cursor: pointer;
+  cursor: pointer;
 }
 
 #saveEdit {
-    background: #00bfff;
-    color: white;
+  background: #00bfff;
+  color: white;
 }
 
 #cancelEdit {
-    background: #555;
-    color: white;
+  background: #555;
+  color: white;
 }
-
 
 /* =========================================================
    12) SKELETON / LOADING
    ========================================================= */
 
 .skeleton-card {
-    background: #1c1c1c;
+  background: #1c1c1c;
 
-    border-radius: 15px;
+  border-radius: 15px;
 
-    overflow: hidden;
+  overflow: hidden;
 
-    animation:
-        pulse 1.2s infinite;
+  animation: pulse 1.2s infinite;
 }
 
 .skeleton-img {
-    width: 100%;
+  width: 100%;
 
-    aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 1;
 
-    background: #2d2d2d;
+  background: #2d2d2d;
 }
 
 .skeleton-info {
-    padding: 20px;
+  padding: 20px;
 }
 
 .skeleton-line {
-    height: 18px;
+  height: 18px;
 
-    background: #2d2d2d;
+  background: #2d2d2d;
 
-    border-radius: 6px;
+  border-radius: 6px;
 
-    margin-bottom: 14px;
+  margin-bottom: 14px;
 }
 
 .skeleton-line.title {
-    width: 75%;
-    height: 28px;
+  width: 75%;
+  height: 28px;
 }
 
 .skeleton-line.short {
-    width: 45%;
+  width: 45%;
 }
 
 @keyframes pulse {
+  0% {
+    opacity: 0.55;
+  }
 
-    0% {
-        opacity: 0.55;
-    }
+  50% {
+    opacity: 1;
+  }
 
-    50% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0.55;
-    }
+  100% {
+    opacity: 0.55;
+  }
 }
-
 
 /* =========================================================
    13) MOBILE / RESPONSIVE
    ========================================================= */
 
 @media (max-width: 600px) {
+  body {
+    padding: 12px;
 
-    body {
-        padding: 12px;
+    margin: 0;
 
-        margin: 0;
+    background: #111;
 
-        background: #111;
+    overflow: hidden;
+  }
 
-        overflow: hidden;
-    }
+  h1 {
+    font-size: 20px;
+    margin: 10px 0;
+  }
 
-    h1 {
-        font-size: 20px;
-        margin: 10px 0;
-    }
+  .container {
+    height: 90vh;
 
+    display: flex;
 
-    .container {
-        height: 90vh;
+    flex-direction: row;
 
-        display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
 
-        flex-direction: row;
+    scroll-snap-type: x mandatory;
 
-        overflow-x: auto;
-        overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
 
-        scroll-snap-type: x mandatory;
+  .container {
+    scrollbar-width: none;
+  }
 
-        -webkit-overflow-scrolling: touch;
-    }
+  .container::-webkit-scrollbar {
+    display: none;
+  }
 
-    .container {
-        scrollbar-width: none;
-    }
+  .card {
+    flex: 0 0 calc(100vw - 40px);
 
-    .container::-webkit-scrollbar {
-        display: none;
-    }
+    height: 100%;
 
+    scroll-snap-align: center;
 
-    .card {
-        flex:
-            0 0 calc(100vw - 40px);
+    scroll-snap-stop: always;
+  }
 
-        height: 100%;
+  .card:hover {
+    transform: none;
+  }
 
-        scroll-snap-align: center;
+  .card img {
+    height: 50vh;
+  }
 
-        scroll-snap-stop: always;
-    }
+  .info {
+    flex: 1;
 
-    .card:hover {
-        transform: none;
-    }
+    padding: 10px;
+  }
 
+  .flip-number {
+    font-size: 36px;
+  }
 
-    .card img {
-        height: 50vh;
-    }
+  .flip-label {
+    font-size: 12px;
+  }
 
+  .progress {
+    margin-top: 20px;
+  }
 
-    .info {
-        flex: 1;
+  /* Trophy mobile */
 
-        padding: 10px;
-    }
+  .trophy-section {
+    margin-top: 10px;
 
+    padding: 5px;
 
-    .flip-number {
-        font-size: 36px;
-    }
+    height: 150px;
+  }
 
+  .trophy-grid {
+    gap: 6px;
+  }
 
-    .flip-label {
-        font-size: 12px;
-    }
+  .trophy-item {
+    padding: 8px 3px;
+  }
 
+  .trophy-icon {
+    font-size: 19px;
+  }
 
-    .progress {
-        margin-top: 20px;
-    }
+  .trophy-name {
+    font-size: 8px;
+  }
 
+  .trophy-count {
+    font-size: 12px;
+  }
 
-    /* Trophy mobile */
+  .trophy-header {
+    margin-bottom: 5px;
+  }
 
-    .trophy-section {
-        margin-top: 10px;
-
-        padding: 5px;
-
-        height: 150px;
-    }
-
-    .trophy-grid {
-        gap: 6px;
-    }
-
-    .trophy-item {
-        padding:
-            8px 3px;
-    }
-
-    .trophy-icon {
-        font-size: 19px;
-    }
-
-    .trophy-name {
-        font-size: 8px;
-    }
-
-    .trophy-count {
-        font-size: 12px;
-    }
-
-    .trophy-header {
-        margin-bottom: 5px;
-    }
-
-    .trophy-progress {
+  .trophy-progress {
     margin-top: 7px;
+  }
 }
-
-}
-
 
 /* =========================================================
    14) VERY SMALL SCREENS
    ========================================================= */
 
 @media (max-width: 380px) {
+  .trophy-icon {
+    font-size: 21px;
+  }
 
-    .trophy-icon {
-        font-size: 21px;
-    }
+  .trophy-name {
+    font-size: 9px;
+  }
 
-    .trophy-name {
-        font-size: 9px;
-    }
-
-    .trophy-count {
-        font-size: 13px;
-    }
+  .trophy-count {
+    font-size: 13px;
+  }
 }
-
 
 /* =========================================================
    15) IMAGE PREVIEW
    ========================================================= */
 
 .image-preview {
-    width: 100%;
+  width: 100%;
 
-    margin-top: 15px;
+  margin-top: 15px;
 
-    border-radius: 10px;
+  border-radius: 10px;
 
-    display: none;
+  display: none;
 }
-
 
 /* =========================================================
    16) ERROR
    ========================================================= */
 
 .error {
-    width: 100%;
+  width: 100%;
 
-    padding: 30px;
+  padding: 30px;
 
-    background: #1c1c1c;
+  background: #1c1c1c;
 
-    border-radius: 15px;
+  border-radius: 15px;
 
-    color: #ff6b6b;
+  color: #ff6b6b;
 
-    text-align: center;
+  text-align: center;
+}
+
+/* =========================================================
+   GAME SELECTOR BUTTON
+   ========================================================= */
+
+.selector-btn {
+  width: 64px;
+  height: 64px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #242424;
+  color: white;
+
+  font-size: 24px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  cursor: pointer;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.selector-btn:hover {
+  background: #333;
+
+  transform: scale(1.08);
+}
+
+/* =========================================================
+   GAME SELECTOR MODAL
+   ========================================================= */
+
+.game-selector-modal {
+  background: rgba(0, 0, 0, 0.65);
+
+  backdrop-filter: blur(5px);
+}
+
+/* Popup */
+
+.game-selector-content {
+  width: min(430px, calc(100vw - 30px));
+
+  max-height: 80vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #1c1c1c;
+
+  border-radius: 16px;
+
+  padding: 20px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.game-selector-header {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 15px;
+}
+
+.game-selector-header h2 {
+  margin: 0;
+
+  font-size: 21px;
+}
+
+.game-selector-close {
+  width: 36px;
+  height: 36px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #2a2a2a;
+
+  color: white;
+
+  font-size: 22px;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.game-selector-close:hover {
+  background: #3a3a3a;
+}
+
+/* =========================================================
+   LIST
+   ========================================================= */
+
+.game-selector-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-right: 3px;
+  overflow-y: auto;
+}
+
+/* =========================================================
+   CATEGORY
+   ========================================================= */
+
+.game-select-group {
+  border: 1px solid #303030;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  background: #222;
+}
+
+/* Category button */
+
+.game-select-header {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 15px;
+
+  border: none;
+
+  background: #222;
+
+  color: white;
+
+  cursor: pointer;
+
+  font-size: 15px;
+
+  text-align: left;
+
+  transition: background 0.2s ease;
+}
+
+.game-select-header:hover {
+  background: #2b2b2b;
+}
+
+/* Left side */
+
+.game-select-header > span:first-child {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+/* Count */
+
+.game-select-count {
+  min-width: 25px;
+
+  padding: 2px 7px;
+
+  border-radius: 999px;
+
+  background: #333;
+
+  color: #999;
+
+  font-size: 11px;
+
+  text-align: center;
+}
+
+/* Arrow */
+
+.game-select-arrow {
+  font-size: 22px;
+
+  color: #777;
+
+  transition: transform 0.2s ease;
+}
+
+/* Rotate arrow when open */
+
+.game-select-group.open .game-select-arrow {
+  transform: rotate(90deg);
+
+  color: #00d4ff;
+}
+
+/* =========================================================
+   GAME LIST INSIDE CATEGORY
+   ========================================================= */
+
+.game-select-games {
+  display: none;
+
+  padding: 4px 8px 8px;
+
+  max-height: 300px;
+
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: #444 #151515;
+}
+
+.game-select-group.open .game-select-games {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+/* Chrome / Edge / Safari */
+.game-select-games::-webkit-scrollbar {
+    width: 6px;
+}
+
+.game-select-games::-webkit-scrollbar-track {
+    background: #151515;
+    border-radius: 10px;
+}
+
+.game-select-games::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 10px;
+}
+
+.game-select-games::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+/* Game name */
+
+.game-selector-game {
+  width: 100%;
+
+  padding: 11px 12px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: #292929;
+
+  color: #ddd;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  font-size: 14px;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.game-selector-game:hover {
+  background: #153441;
+
+  color: #00d4ff;
+
+  transform: translateX(3px);
+}
+
+/* Empty status */
+
+.game-selector-empty {
+  padding: 10px 12px;
+
+  color: #666;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   SELECTED GAME HIGHLIGHT
+   ========================================================= */
+
+.game-selector-highlight {
+  border: 3px solid #00d4ff !important;
+
+  box-shadow:
+    0 0 0 2px rgba(0, 212, 255, 0.15),
+    0 0 30px rgba(0, 212, 255, 0.28) !important;
+
+  animation: gameSelectorPulse 0.8s ease;
+}
+
+@keyframes gameSelectorPulse {
+  0% {
+    transform: scale(0.98);
+  }
+
+  50% {
+    transform: scale(1.01);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.game-selector-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.game-selector-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.game-selector-list::-webkit-scrollbar-thumb {
+  background: #444;
+
+  border-radius: 999px;
+}
+
+.game-selector-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .game-selector-content {
+    width: calc(100vw - 24px);
+
+    max-height: 85vh;
+
+    padding: 15px;
+  }
+
+  .game-selector-header h2 {
+    font-size: 19px;
+  }
+
+  .game-select-header {
+    padding: 13px 12px;
+  }
+
+  .game-selector-game {
+    padding: 12px;
+  }
 }

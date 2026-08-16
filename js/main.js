@@ -26,6 +26,33 @@ const statusGroup = document.getElementById("statusGroup");
 const saveEditBtn = document.getElementById("saveEdit");
 const cancelEditBtn = document.getElementById("cancelEdit");
 
+const openGameSelectorBtn = document.getElementById("openGameSelector");
+
+const gameSelectorModal = document.getElementById("gameSelectorModal");
+
+const closeGameSelectorBtn = document.getElementById("closeGameSelector");
+
+const gameSelectHeaders = document.querySelectorAll(".game-select-header");
+
+const gamesAll = document.getElementById("gamesAll");
+
+const gamesPlaying = document.getElementById("gamesPlaying");
+
+const gamesStory = document.getElementById("gamesStory");
+
+const gamesCompleted = document.getElementById("gamesCompleted");
+
+const gamesBacklog = document.getElementById("gamesBacklog");
+
+const countAll = document.getElementById("countAll");
+
+const countPlaying = document.getElementById("countPlaying");
+
+const countStory = document.getElementById("countStory");
+
+const countCompleted = document.getElementById("countCompleted");
+
+const countBacklog = document.getElementById("countBacklog");
 
 // =========================================================
 // SUPABASE CLIENT
@@ -33,9 +60,8 @@ const cancelEditBtn = document.getElementById("cancelEdit");
 
 const sb = window.supabase.createClient(
   "https://jwncunroufyxkibdutzv.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3bmN1bnJvdWZ5eGtpYmR1dHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzMzI2ODEsImV4cCI6MjEwMDkwODY4MX0.vMHa7c3E9ePwo3g93teQ343pl4O3JBpOTONDNv0Nyuc"
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3bmN1bnJvdWZ5eGtpYmR1dHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzMzI2ODEsImV4cCI6MjEwMDkwODY4MX0.vMHa7c3E9ePwo3g93teQ343pl4O3JBpOTONDNv0Nyuc",
 );
-
 
 // =========================================================
 // APP STATE
@@ -43,7 +69,6 @@ const sb = window.supabase.createClient(
 
 let games = [];
 let isAdmin = false;
-
 
 // =========================================================
 // UI HELPERS
@@ -68,7 +93,6 @@ function renderSkeletons(count = 20) {
   }
 }
 
-
 // Upload a file to Supabase storage and return public URL
 async function uploadToStorage(file) {
   const fileName = Date.now() + "-" + file.name;
@@ -81,13 +105,8 @@ async function uploadToStorage(file) {
     throw uploadError;
   }
 
-  return sb.storage
-    .from("game-images")
-    .getPublicUrl(fileName)
-    .data
-    .publicUrl;
+  return sb.storage.from("game-images").getPublicUrl(fileName).data.publicUrl;
 }
-
 
 // Preview selected image
 function previewLocalImage(inputEl, imgEl) {
@@ -99,7 +118,6 @@ function previewLocalImage(inputEl, imgEl) {
   imgEl.style.display = "block";
 }
 
-
 // =========================================================
 // TROPHY HELPERS
 // =========================================================
@@ -107,11 +125,8 @@ function previewLocalImage(inputEl, imgEl) {
 function getTrophyValue(game, field) {
   const value = Number(game?.[field]);
 
-  return Number.isFinite(value) && value >= 0
-    ? value
-    : 0;
+  return Number.isFinite(value) && value >= 0 ? value : 0;
 }
-
 
 function getTrophyProgress(game) {
   const value = Number(game?.trophy_progress);
@@ -123,7 +138,6 @@ function getTrophyProgress(game) {
   return Math.max(0, Math.min(100, value));
 }
 
-
 function getTotalTrophies(game) {
   return (
     getTrophyValue(game, "total_platinum") +
@@ -132,7 +146,6 @@ function getTotalTrophies(game) {
     getTrophyValue(game, "total_bronze")
   );
 }
-
 
 function renderTrophySection(game, released) {
   // IMPORTANT:
@@ -160,18 +173,18 @@ function renderTrophySection(game, released) {
   // If the game has no trophy information at all,
   // don't show an empty trophy panel.
   const platformMessageStatuses = [
-  "playing",
-  "story_completed",
-  "completed_100",
-  "backlog"
-];
+    "playing",
+    "story_completed",
+    "completed_100",
+    "backlog",
+  ];
 
- if (totalTrophies === 0) {
-  const message = platformMessageStatuses.includes(game.status)
-    ? "Game played on another platform and has no trophy data."
-    : "Trophy data has not been synced yet.";
+  if (totalTrophies === 0) {
+    const message = platformMessageStatuses.includes(game.status)
+      ? "Game played on another platform and has no trophy data."
+      : "Trophy data has not been synced yet.";
 
-  return `
+    return `
     <div class="trophy-section trophy-unavailable">
       <div class="trophy-header">
         <span class="trophy-title">🏆 TROPHIES</span>
@@ -183,7 +196,7 @@ function renderTrophySection(game, released) {
       </div>
     </div>
   `;
-}
+  }
 
   return `
     <div class="trophy-section">
@@ -249,7 +262,6 @@ function renderTrophySection(game, released) {
   `;
 }
 
-
 // =========================================================
 // GAME CARD
 // =========================================================
@@ -305,7 +317,6 @@ function createCard(game) {
   game.element2 = card.querySelector(".countdown2");
   game.trophyElement = card.querySelector(".trophy-container");
 
-
   // =======================================================
   // DELETE
   // =======================================================
@@ -317,10 +328,7 @@ function createCard(game) {
       return;
     }
 
-    const { error } = await sb
-      .from("games")
-      .delete()
-      .eq("id", game.id);
+    const { error } = await sb.from("games").delete().eq("id", game.id);
 
     if (error) {
       alert(error.message);
@@ -330,13 +338,11 @@ function createCard(game) {
     card.remove();
   });
 
-
   // =======================================================
   // EDIT
   // =======================================================
 
   card.querySelector(".edit-btn").addEventListener("click", () => {
-
     editName.value = game.name;
 
     editPreview.src = game.image;
@@ -347,30 +353,22 @@ function createCard(game) {
     const release = new Date(game.release);
 
     const local = new Date(
-      release.getTime() -
-      release.getTimezoneOffset() * 60000
+      release.getTime() - release.getTimezoneOffset() * 60000,
     );
 
-    editRelease.value = local
-      .toISOString()
-      .slice(0, 16);
+    editRelease.value = local.toISOString().slice(0, 16);
 
     editStatus.value = game.status ?? "out";
 
-    statusGroup.style.display =
-      release <= new Date()
-        ? "block"
-        : "none";
+    statusGroup.style.display = release <= new Date() ? "block" : "none";
 
     editModal.style.display = "flex";
-
 
     // =====================================================
     // SAVE EDIT
     // =====================================================
 
     saveEditBtn.onclick = async () => {
-
       let image = game.image;
 
       const file = editImage.files[0];
@@ -403,10 +401,8 @@ function createCard(game) {
     };
   });
 
-
   container.appendChild(card);
 }
-
 
 // =========================================================
 // RENDER ALL GAMES
@@ -420,7 +416,6 @@ function renderGames(list) {
   });
 }
 
-
 // =========================================================
 // UPDATE COUNTDOWN
 // =========================================================
@@ -429,34 +424,26 @@ function updateCountdown() {
   const now = new Date();
 
   games.forEach((game) => {
-
     const release = new Date(game.release);
 
     const diff = release - now;
 
     const released = diff <= 0;
 
-    const urgent =
-      diff <= 7 * 24 * 60 * 60 * 1000 &&
-      diff > 0;
-
+    const urgent = diff <= 7 * 24 * 60 * 60 * 1000 && diff > 0;
 
     // =====================================================
     // GAME RELEASED
     // =====================================================
 
     if (released) {
-
       switch (game.status) {
-
         case "backlog":
-          game.element.innerHTML =
-            '<span class="backlog">📚 BACKLOG</span>';
+          game.element.innerHTML = '<span class="backlog">📚 BACKLOG</span>';
           break;
 
         case "playing":
-          game.element.innerHTML =
-            '<span class="playing">⚔️ PLAYING</span>';
+          game.element.innerHTML = '<span class="playing">⚔️ PLAYING</span>';
           break;
 
         case "story_completed":
@@ -465,13 +452,11 @@ function updateCountdown() {
           break;
 
         case "completed_100":
-          game.element.innerHTML =
-            '<span class="full">🏆 PLATINUM 🏆</span>';
+          game.element.innerHTML = '<span class="full">🏆 PLATINUM 🏆</span>';
           break;
 
         default:
-          game.element.innerHTML =
-            '<span class="out">🔥 OUT NOW!</span>';
+          game.element.innerHTML = '<span class="out">🔥 OUT NOW!</span>';
       }
 
       // No release progress after launch
@@ -483,13 +468,11 @@ function updateCountdown() {
       // ---------------------------------------------------
 
       if (game.trophyElement) {
-        game.trophyElement.innerHTML =
-          renderTrophySection(game, true);
+        game.trophyElement.innerHTML = renderTrophySection(game, true);
       }
 
       return;
     }
-
 
     // =====================================================
     // GAME NOT RELEASED
@@ -500,55 +483,29 @@ function updateCountdown() {
       game.trophyElement.innerHTML = "";
     }
 
-
     // Countdown values
 
-    const days =
-      Math.floor(
-        diff / (1000 * 60 * 60 * 24)
-      );
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    const hours =
-      Math.floor(
-        (diff / (1000 * 60 * 60)) % 24
-      );
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
 
-    const minutes =
-      Math.floor(
-        (diff / (1000 * 60)) % 60
-      );
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
 
-    const seconds =
-      Math.floor(
-        (diff / 1000) % 60
-      );
-
+    const seconds = Math.floor((diff / 1000) % 60);
 
     // Release progress
 
-    const createdAt = game.created_at
-      ? new Date(game.created_at)
-      : new Date();
+    const createdAt = game.created_at ? new Date(game.created_at) : new Date();
 
-    const total =
-      release - createdAt;
+    const total = release - createdAt;
 
-    const elapsed =
-      now - createdAt;
+    const elapsed = now - createdAt;
 
     let percent = 0;
 
     if (total > 0) {
-      percent =
-        Math.max(
-          0,
-          Math.min(
-            100,
-            (elapsed / total) * 100
-          )
-        );
+      percent = Math.max(0, Math.min(100, (elapsed / total) * 100));
     }
-
 
     // Countdown
 
@@ -574,7 +531,6 @@ function updateCountdown() {
       </div>
     `;
 
-
     // Release progress
 
     game.element2.innerHTML = `
@@ -597,7 +553,6 @@ function updateCountdown() {
   });
 }
 
-
 // =========================================================
 // SCROLL TO NEXT UPCOMING GAME
 // =========================================================
@@ -605,17 +560,13 @@ function updateCountdown() {
 function highlightNextGame() {
   const now = new Date();
 
-  const nextGame = games.find(
-    (game) =>
-      new Date(game.release) > now
-  );
+  const nextGame = games.find((game) => new Date(game.release) > now);
 
   if (!nextGame) {
     return;
   }
 
-  const card =
-    nextGame.element.closest(".card");
+  const card = nextGame.element.closest(".card");
 
   if (!card) {
     return;
@@ -626,59 +577,44 @@ function highlightNextGame() {
     block: "center",
   });
 
-  card.style.border =
-    "3px solid #00d4ff";
+  card.style.border = "3px solid #00d4ff";
 }
-
 
 // =========================================================
 // MODAL INPUT EVENTS
 // =========================================================
 
 addImage.addEventListener("change", (e) => {
-  previewLocalImage(
-    e.target,
-    addPreview
-  );
+  previewLocalImage(e.target, addPreview);
 });
-
 
 editImage.addEventListener("change", (e) => {
-  previewLocalImage(
-    e.target,
-    editPreview
-  );
+  previewLocalImage(e.target, editPreview);
 });
-
 
 openAddBtn.onclick = () => {
   addModal.style.display = "flex";
 };
 
-
 cancelAddBtn.onclick = () => {
   addModal.style.display = "none";
 };
 
-
 cancelEditBtn.onclick = () => {
   editModal.style.display = "none";
 };
-
 
 // =========================================================
 // SAVE NEW GAME
 // =========================================================
 
 saveAddBtn.onclick = async () => {
-
   const file = addImage.files[0];
 
   if (!file) {
     alert("Please choose an image.");
     return;
   }
-
 
   let image;
 
@@ -689,7 +625,6 @@ saveAddBtn.onclick = async () => {
     return;
   }
 
-
   const game = {
     name: addName.value,
     image,
@@ -697,57 +632,276 @@ saveAddBtn.onclick = async () => {
     status: "countdown",
   };
 
-
-  const { error } = await sb
-    .from("games")
-    .insert(game);
-
+  const { error } = await sb.from("games").insert(game);
 
   if (error) {
     alert(error.message);
     return;
   }
 
-
   location.reload();
 };
 
+// =========================================================
+// GAME SELECTOR
+// =========================================================
+
+function getGamesByStatus(status) {
+  if (status === "all") {
+    return games;
+  }
+
+  return games.filter(
+    (game) => game.status === status
+  );
+}
+
+
+function scrollToSelectedGame(game) {
+  if (!game || !game.element) {
+    return;
+  }
+
+  const card =
+    game.element.closest(".card");
+
+  if (!card) {
+    return;
+  }
+
+  // Close popup
+  gameSelectorModal.style.display = "none";
+
+  // Scroll to card
+  card.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+    inline: "center",
+  });
+
+  // Highlight selected game
+  card.classList.add(
+    "game-selector-highlight"
+  );
+
+  setTimeout(() => {
+    card.classList.remove(
+      "game-selector-highlight"
+    );
+  }, 1800);
+}
+
+
+function renderGameSelectorList(
+  containerElement,
+  gameList
+) {
+  containerElement.innerHTML = "";
+
+  if (gameList.length === 0) {
+    containerElement.innerHTML = `
+      <div class="game-selector-empty">
+        No games
+      </div>
+    `;
+
+    return;
+  }
+
+  gameList.forEach((game) => {
+    const button =
+      document.createElement("button");
+
+    button.className =
+      "game-selector-game";
+
+    button.textContent =
+      game.name;
+
+    button.addEventListener(
+      "click",
+      () => {
+        scrollToSelectedGame(game);
+      }
+    );
+
+    containerElement.appendChild(button);
+  });
+}
+
+
+function updateGameSelector() {
+
+  const all =
+    getGamesByStatus("all");
+
+  const playing =
+    getGamesByStatus("playing");
+
+  const story =
+    getGamesByStatus("story_completed");
+
+  const completed =
+    getGamesByStatus("completed_100");
+
+  const backlog =
+    getGamesByStatus("backlog");
+
+
+  // Counts
+  countAll.textContent =
+    all.length;
+
+  countPlaying.textContent =
+    playing.length;
+
+  countStory.textContent =
+    story.length;
+
+  countCompleted.textContent =
+    completed.length;
+
+  countBacklog.textContent =
+    backlog.length;
+
+
+  // Game lists
+  renderGameSelectorList(
+    gamesAll,
+    all
+  );
+
+  renderGameSelectorList(
+    gamesPlaying,
+    playing
+  );
+
+  renderGameSelectorList(
+    gamesStory,
+    story
+  );
+
+  renderGameSelectorList(
+    gamesCompleted,
+    completed
+  );
+
+  renderGameSelectorList(
+    gamesBacklog,
+    backlog
+  );
+}
+
+
+// Open popup
+openGameSelectorBtn.addEventListener(
+  "click",
+  () => {
+
+    updateGameSelector();
+
+    gameSelectorModal.style.display =
+      "flex";
+  }
+);
+
+
+// Close popup
+closeGameSelectorBtn.addEventListener(
+  "click",
+  () => {
+    gameSelectorModal.style.display =
+      "none";
+  }
+);
+
+
+// Click outside popup
+gameSelectorModal.addEventListener(
+  "click",
+  (event) => {
+
+    if (
+      event.target ===
+      gameSelectorModal
+    ) {
+      gameSelectorModal.style.display =
+        "none";
+    }
+  }
+);
+
+
+// =========================================================
+// OPEN / CLOSE CATEGORY
+// =========================================================
+
+gameSelectHeaders.forEach(
+  (header) => {
+
+    header.addEventListener(
+      "click",
+      () => {
+
+        const group =
+          header.parentElement;
+
+        const gameList =
+          group.querySelector(
+            ".game-select-games"
+          );
+
+        const isOpen =
+          group.classList.contains(
+            "open"
+          );
+
+
+        // Close all groups first
+        document
+          .querySelectorAll(
+            ".game-select-group"
+          )
+          .forEach((item) => {
+            item.classList.remove(
+              "open"
+            );
+          });
+
+
+        // Open selected group
+        if (!isOpen) {
+          group.classList.add(
+            "open"
+          );
+        }
+      }
+    );
+  }
+);
 
 // =========================================================
 // INITIALIZATION
 // =========================================================
 
 (async function init() {
-
   renderSkeletons();
-
 
   // Check auth
   const {
     data: { session },
   } = await sb.auth.getSession();
 
-
   isAdmin = session != null;
-
 
   if (isAdmin) {
     openAddBtn.style.display = "flex";
   }
 
-
   // Load games
-  const {
-    data,
-    error,
-  } = await sb
-    .from("games")
-    .select("*")
-    .order("release");
-
+  const { data, error } = await sb.from("games").select("*").order("release");
 
   if (error) {
-
     container.innerHTML = `
       <div class="error">
         Error loading games: ${error.message}
@@ -757,46 +911,29 @@ saveAddBtn.onclick = async () => {
     return;
   }
 
-
   games = data || [];
-
 
   // Render
   renderGames(games);
 
+  updateGameSelector();
 
   // Initial update
   updateCountdown();
 
-
   // Update every second
-  setInterval(
-    updateCountdown,
-    1000
-  );
-
+  setInterval(updateCountdown, 1000);
 
   // Highlight next release
   highlightNextGame();
-
 })();
-
 
 // =========================================================
 // PREVENT PINCH / GESTURE ZOOM
 // =========================================================
 
-document.addEventListener(
-  "gesturestart",
-  (e) => e.preventDefault()
-);
+document.addEventListener("gesturestart", (e) => e.preventDefault());
 
-document.addEventListener(
-  "gesturechange",
-  (e) => e.preventDefault()
-);
+document.addEventListener("gesturechange", (e) => e.preventDefault());
 
-document.addEventListener(
-  "gestureend",
-  (e) => e.preventDefault()
-);
+document.addEventListener("gestureend", (e) => e.preventDefault());
