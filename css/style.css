@@ -789,6 +789,11 @@ h1 {
   .trophy-progress {
     margin-top: 7px;
   }
+
+  .top-bar {
+    top: 10px;
+    bottom: unset;
+  }
 }
 
 /* =========================================================
@@ -1078,21 +1083,21 @@ h1 {
 
 /* Chrome / Edge / Safari */
 .game-select-games::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 .game-select-games::-webkit-scrollbar-track {
-    background: #151515;
-    border-radius: 10px;
+  background: #151515;
+  border-radius: 10px;
 }
 
 .game-select-games::-webkit-scrollbar-thumb {
-    background: #444;
-    border-radius: 10px;
+  background: #444;
+  border-radius: 10px;
 }
 
 .game-select-games::-webkit-scrollbar-thumb:hover {
-    background: #666;
+  background: #666;
 }
 
 /* Game name */
