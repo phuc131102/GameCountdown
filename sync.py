@@ -345,6 +345,32 @@ def get_stat_name(stat):
 
     return None
 
+def get_trophy_type(trophy):
+    value = getattr(
+        trophy,
+        "trophy_type",
+        None,
+    )
+
+    if value is None:
+        return None
+
+    value = str(value).lower()
+
+    if "platinum" in value:
+        return "platinum"
+
+    if "gold" in value:
+        return "gold"
+
+    if "silver" in value:
+        return "silver"
+
+    if "bronze" in value:
+        return "bronze"
+
+    return None
+
 
 def get_earned_achievements(
     psn_game,
@@ -503,6 +529,7 @@ def get_earned_achievements(
                 "earned_at": iso_datetime(
                     earned_at
                 ),
+                "type": get_trophy_type(trophy)
             }
         )
 

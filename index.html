@@ -23,6 +23,66 @@
     <link rel="stylesheet" href="./css/style.css" />
   </head>
 
+  <!-- Game Details Modal -->
+  <div id="gameDetailsModal" class="modal game-details-modal">
+    <div class="game-details-content">
+      <div class="game-details-header">
+        <h2 id="gameDetailsTitle">Game Details</h2>
+
+        <button
+          id="closeGameDetails"
+          class="game-details-close"
+          aria-label="Close"
+        >
+          &times;
+        </button>
+      </div>
+
+      <!-- Play Statistics -->
+      <div class="game-details-section">
+        <h3>PLAY STATISTICS</h3>
+
+        <div class="game-stats-grid">
+          <div class="game-stat">
+            <span class="game-stat-label">Play Time</span>
+            <span id="detailsPlayTime" class="game-stat-value"> — </span>
+          </div>
+
+          <div class="game-stat">
+            <span class="game-stat-label">First Play</span>
+            <span id="detailsFirstPlayed" class="game-stat-value"> — </span>
+          </div>
+
+          <div class="game-stat">
+            <span class="game-stat-label">Last Play</span>
+            <span id="detailsLastPlayed" class="game-stat-value"> — </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Last Achievement -->
+      <div class="game-details-section">
+        <h3>LAST ACHIEVEMENT</h3>
+
+        <div id="detailsLastAchievement" class="last-achievement">
+          <div class="achievement-name">—</div>
+          <div class="achievement-detail">—</div>
+          <div class="achievement-date">—</div>
+        </div>
+      </div>
+
+      <!-- Earned Achievements -->
+      <div class="game-details-section achievements-section">
+        <div class="achievements-title-row">
+          <h3>EARNED ACHIEVEMENTS</h3>
+          <span id="detailsAchievementCount"> 0 </span>
+        </div>
+
+        <div id="detailsAchievementsList" class="achievements-list"></div>
+      </div>
+    </div>
+  </div>
+
   <body>
     <!-- Top bar containing controls (e.g. open add modal) -->
     <div class="top-bar">

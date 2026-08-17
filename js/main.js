@@ -30,6 +30,30 @@ const openGameSelectorBtn = document.getElementById("openGameSelector");
 
 const gameSelectorModal = document.getElementById("gameSelectorModal");
 
+const gameDetailsModal = document.getElementById("gameDetailsModal");
+
+const closeGameDetailsBtn = document.getElementById("closeGameDetails");
+
+const gameDetailsTitle = document.getElementById("gameDetailsTitle");
+
+const detailsPlayTime = document.getElementById("detailsPlayTime");
+
+const detailsFirstPlayed = document.getElementById("detailsFirstPlayed");
+
+const detailsLastPlayed = document.getElementById("detailsLastPlayed");
+
+const detailsLastAchievement = document.getElementById(
+  "detailsLastAchievement",
+);
+
+const detailsAchievementsList = document.getElementById(
+  "detailsAchievementsList",
+);
+
+const detailsAchievementCount = document.getElementById(
+  "detailsAchievementCount",
+);
+
 const closeGameSelectorBtn = document.getElementById("closeGameSelector");
 
 const gameSelectHeaders = document.querySelectorAll(".game-select-header");
@@ -262,6 +286,186 @@ function renderTrophySection(game, released) {
   `;
 }
 
+function getTrophyIcon(type) {
+  switch (String(type || "").toLowerCase()) {
+    case "platinum":
+      return "🏆";
+
+    case "gold":
+      return "🥇";
+
+    case "silver":
+      return "🥈";
+
+    case "bronze":
+      return "🥉";
+
+    default:
+      return "???";
+  }
+}
+
+// =========================================================
+// GAME DETAILS MODAL
+// =========================================================
+
+function formatGameDate(value) {
+  if (!value) {
+    return "—";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "—";
+  }
+
+  return date.toLocaleString("en-GB", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
+function escapeHTML(value) {
+  if (value == null) {
+    return "";
+  }
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function openGameDetails(game) {
+  gameDetailsTitle.textContent = game.name || "Game Details";
+
+  // =======================================================
+  // PLAY TIME
+  // =======================================================
+
+  detailsPlayTime.textContent = game.play_time || "—";
+
+  // =======================================================
+  // FIRST PLAY
+  // =======================================================
+
+  detailsFirstPlayed.textContent = formatGameDate(game.first_played_at);
+
+  // =======================================================
+  // LAST PLAY
+  // =======================================================
+
+  detailsLastPlayed.textContent = formatGameDate(game.last_played_at);
+
+  // =======================================================
+  // LAST ACHIEVEMENT
+  // =======================================================
+
+  const lastAchievementName = game.last_achievement_name;
+
+  const lastAchievementDetail = game.last_achievement_detail;
+
+  const lastAchievementAt = game.last_achievement_at;
+
+  if (lastAchievementName || lastAchievementDetail || lastAchievementAt) {
+    detailsLastAchievement.innerHTML = `
+      <div class="achievement-name">
+  <span class="trophy-icon">
+    ${getTrophyIcon(game.earned_achievements?.[0]?.type)}
+  </span>
+
+  <span>
+    ${escapeHTML(lastAchievementName || "Unknown achievement")}
+  </span>
+</div>
+
+      <div class="achievement-detail">
+        ${escapeHTML(lastAchievementDetail || "No description available.")}
+      </div>
+
+      <div class="achievement-date">
+        ${formatGameDate(lastAchievementAt)}
+      </div>
+    `;
+  } else {
+    detailsLastAchievement.innerHTML = `
+      <div class="achievements-empty">
+        No achievement data available.
+      </div>
+    `;
+  }
+
+  // =======================================================
+  // EARNED ACHIEVEMENTS
+  // =======================================================
+
+  const achievements = Array.isArray(game.earned_achievements)
+    ? game.earned_achievements
+    : [];
+
+  detailsAchievementCount.textContent = achievements.length;
+
+  if (achievements.length === 0) {
+    detailsAchievementsList.innerHTML = `
+      <div class="achievements-empty">
+        No earned achievements yet.
+      </div>
+    `;
+  } else {
+    detailsAchievementsList.innerHTML = achievements
+      .map((achievement) => {
+        const trophyIcon = getTrophyIcon(achievement.type);
+
+        return `
+        <div class="earned-achievement">
+
+          <div class="earned-achievement-name">
+            <span class="trophy-icon">
+              ${trophyIcon}
+            </span>
+
+            <span>
+              ${escapeHTML(achievement.name || "Unknown achievement")}
+            </span>
+          </div>
+
+          <div class="earned-achievement-detail">
+            ${escapeHTML(achievement.detail || "No description available.")}
+          </div>
+
+          <div class="earned-achievement-date">
+            ${formatGameDate(achievement.earned_at)}
+          </div>
+
+        </div>
+      `;
+      })
+      .join("");
+  }
+
+  // =======================================================
+  // OPEN
+  // =======================================================
+
+  gameDetailsModal.style.display = "flex";
+}
+
+function closeGameDetails() {
+  gameDetailsModal.style.display = "none";
+}
+
+closeGameDetailsBtn.addEventListener("click", closeGameDetails);
+
+gameDetailsModal.addEventListener("click", (event) => {
+  if (event.target === gameDetailsModal) {
+    closeGameDetails();
+  }
+});
+
 // =========================================================
 // GAME CARD
 // =========================================================
@@ -270,6 +474,10 @@ function createCard(game) {
   const card = document.createElement("div");
 
   card.className = "card";
+
+  card.addEventListener("click", () => {
+    openGameDetails(game);
+  });
 
   const release = new Date(game.release);
   const now = new Date();
@@ -342,7 +550,8 @@ function createCard(game) {
   // EDIT
   // =======================================================
 
-  card.querySelector(".edit-btn").addEventListener("click", () => {
+  card.querySelector(".edit-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
     editName.value = game.name;
 
     editPreview.src = game.image;
@@ -651,19 +860,15 @@ function getGamesByStatus(status) {
     return games;
   }
 
-  return games.filter(
-    (game) => game.status === status
-  );
+  return games.filter((game) => game.status === status);
 }
-
 
 function scrollToSelectedGame(game) {
   if (!game || !game.element) {
     return;
   }
 
-  const card =
-    game.element.closest(".card");
+  const card = game.element.closest(".card");
 
   if (!card) {
     return;
@@ -680,22 +885,14 @@ function scrollToSelectedGame(game) {
   });
 
   // Highlight selected game
-  card.classList.add(
-    "game-selector-highlight"
-  );
+  card.classList.add("game-selector-highlight");
 
   setTimeout(() => {
-    card.classList.remove(
-      "game-selector-highlight"
-    );
+    card.classList.remove("game-selector-highlight");
   }, 1800);
 }
 
-
-function renderGameSelectorList(
-  containerElement,
-  gameList
-) {
+function renderGameSelectorList(containerElement, gameList) {
   containerElement.innerHTML = "";
 
   if (gameList.length === 0) {
@@ -709,176 +906,96 @@ function renderGameSelectorList(
   }
 
   gameList.forEach((game) => {
-    const button =
-      document.createElement("button");
+    const button = document.createElement("button");
 
-    button.className =
-      "game-selector-game";
+    button.className = "game-selector-game";
 
-    button.textContent =
-      game.name;
+    button.textContent = game.name;
 
-    button.addEventListener(
-      "click",
-      () => {
-        scrollToSelectedGame(game);
-      }
-    );
+    button.addEventListener("click", () => {
+      scrollToSelectedGame(game);
+    });
 
     containerElement.appendChild(button);
   });
 }
 
-
 function updateGameSelector() {
+  const all = getGamesByStatus("all");
 
-  const all =
-    getGamesByStatus("all");
+  const playing = getGamesByStatus("playing");
 
-  const playing =
-    getGamesByStatus("playing");
+  const story = getGamesByStatus("story_completed");
 
-  const story =
-    getGamesByStatus("story_completed");
+  const completed = getGamesByStatus("completed_100");
 
-  const completed =
-    getGamesByStatus("completed_100");
-
-  const backlog =
-    getGamesByStatus("backlog");
-
+  const backlog = getGamesByStatus("backlog");
 
   // Counts
-  countAll.textContent =
-    all.length;
+  countAll.textContent = all.length;
 
-  countPlaying.textContent =
-    playing.length;
+  countPlaying.textContent = playing.length;
 
-  countStory.textContent =
-    story.length;
+  countStory.textContent = story.length;
 
-  countCompleted.textContent =
-    completed.length;
+  countCompleted.textContent = completed.length;
 
-  countBacklog.textContent =
-    backlog.length;
-
+  countBacklog.textContent = backlog.length;
 
   // Game lists
-  renderGameSelectorList(
-    gamesAll,
-    all
-  );
+  renderGameSelectorList(gamesAll, all);
 
-  renderGameSelectorList(
-    gamesPlaying,
-    playing
-  );
+  renderGameSelectorList(gamesPlaying, playing);
 
-  renderGameSelectorList(
-    gamesStory,
-    story
-  );
+  renderGameSelectorList(gamesStory, story);
 
-  renderGameSelectorList(
-    gamesCompleted,
-    completed
-  );
+  renderGameSelectorList(gamesCompleted, completed);
 
-  renderGameSelectorList(
-    gamesBacklog,
-    backlog
-  );
+  renderGameSelectorList(gamesBacklog, backlog);
 }
 
-
 // Open popup
-openGameSelectorBtn.addEventListener(
-  "click",
-  () => {
+openGameSelectorBtn.addEventListener("click", () => {
+  updateGameSelector();
 
-    updateGameSelector();
-
-    gameSelectorModal.style.display =
-      "flex";
-  }
-);
-
+  gameSelectorModal.style.display = "flex";
+});
 
 // Close popup
-closeGameSelectorBtn.addEventListener(
-  "click",
-  () => {
-    gameSelectorModal.style.display =
-      "none";
-  }
-);
-
+closeGameSelectorBtn.addEventListener("click", () => {
+  gameSelectorModal.style.display = "none";
+});
 
 // Click outside popup
-gameSelectorModal.addEventListener(
-  "click",
-  (event) => {
-
-    if (
-      event.target ===
-      gameSelectorModal
-    ) {
-      gameSelectorModal.style.display =
-        "none";
-    }
+gameSelectorModal.addEventListener("click", (event) => {
+  if (event.target === gameSelectorModal) {
+    gameSelectorModal.style.display = "none";
   }
-);
-
+});
 
 // =========================================================
 // OPEN / CLOSE CATEGORY
 // =========================================================
 
-gameSelectHeaders.forEach(
-  (header) => {
+gameSelectHeaders.forEach((header) => {
+  header.addEventListener("click", () => {
+    const group = header.parentElement;
 
-    header.addEventListener(
-      "click",
-      () => {
+    const gameList = group.querySelector(".game-select-games");
 
-        const group =
-          header.parentElement;
+    const isOpen = group.classList.contains("open");
 
-        const gameList =
-          group.querySelector(
-            ".game-select-games"
-          );
+    // Close all groups first
+    document.querySelectorAll(".game-select-group").forEach((item) => {
+      item.classList.remove("open");
+    });
 
-        const isOpen =
-          group.classList.contains(
-            "open"
-          );
-
-
-        // Close all groups first
-        document
-          .querySelectorAll(
-            ".game-select-group"
-          )
-          .forEach((item) => {
-            item.classList.remove(
-              "open"
-            );
-          });
-
-
-        // Open selected group
-        if (!isOpen) {
-          group.classList.add(
-            "open"
-          );
-        }
-      }
-    );
-  }
-);
+    // Open selected group
+    if (!isOpen) {
+      group.classList.add("open");
+    }
+  });
+});
 
 // =========================================================
 // INITIALIZATION
