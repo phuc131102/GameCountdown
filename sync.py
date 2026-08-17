@@ -16,8 +16,11 @@ from psnawp_api.models.trophies import PlatformType
 
 FUZZY_THRESHOLD = 85
 
-# Trophy detail requests are more expensive than trophy_titles().
-# Set to False temporarily if you only want summary sync.
+# True:
+#   Fetch detailed earned achievements when necessary.
+#
+# False:
+#   Only sync trophy summary / play stats.
 SYNC_ACHIEVEMENT_DETAILS = True
 
 
@@ -48,17 +51,30 @@ if not SUPABASE_KEY:
 
 print("Connecting to PSN...")
 
-psnawp = PSNAWP(NPSSO_CODE)
-psn = psnawp.me()
+try:
+    psnawp = PSNAWP(NPSSO_CODE)
+    psn = psnawp.me()
 
-print(f"PSN account: {psn.online_id}")
+    print(f"PSN account: {psn.online_id}")
+
+except Exception as error:
+    print("ERROR connecting to PSN:")
+    print(error)
+    raise
+
 
 print("Connecting to Supabase...")
 
-supabase = create_client(
-    SUPABASE_URL,
-    SUPABASE_KEY,
-)
+try:
+    supabase = create_client(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+    )
+
+except Exception as error:
+    print("ERROR connecting to Supabase:")
+    print(error)
+    raise
 
 
 # =========================================================
@@ -71,9 +87,9 @@ def normalize_name(name):
 
     Examples:
 
-    Ghost of Yōtei
-    Ghost of Yotei
-    GHOST OF YOTEI™
+        Ghost of Yōtei
+        Ghost of Yotei
+        GHOST OF YOTEI™
 
     -> ghost of yotei
     """
@@ -84,7 +100,10 @@ def normalize_name(name):
     name = str(name)
 
     # Unicode normalization
-    name = unicodedata.normalize("NFKD", name)
+    name = unicodedata.normalize(
+        "NFKD",
+        name,
+    )
 
     # Remove accents
     name = "".join(
@@ -93,6 +112,7 @@ def normalize_name(name):
         if not unicodedata.combining(char)
     )
 
+    # Lowercase
     name = name.lower()
 
     # Remove trademark / copyright symbols
@@ -123,8 +143,8 @@ def get_title_id(game):
     """
     Try to get the PSN communication/title ID.
 
-    np_communication_id is the important ID for
-    trophy API calls.
+    np_communication_id is the important ID
+    for trophy API calls.
     """
 
     for attr in [
@@ -150,7 +170,8 @@ def get_platform(game):
     Resolve PSNAWP PlatformType from a PSN object.
 
     If PSNAWP does not expose the platform,
-    default to PS5 because this project only tracks PS5 games.
+    default to PS5 because this project only
+    tracks PS5 games.
     """
 
     for attr in [
@@ -188,7 +209,7 @@ def get_platform(game):
         if normalized in mapping:
             return mapping[normalized]
 
-    # This project only tracks PS5 games
+    # This project only tracks PS5 games.
     return PlatformType.PS5
 
 
@@ -215,7 +236,11 @@ def trophy_value(
 
     try:
         return int(value)
-    except (TypeError, ValueError):
+
+    except (
+        TypeError,
+        ValueError,
+    ):
         return 0
 
 
@@ -251,7 +276,7 @@ def calculate_progress(
 
 def iso_datetime(value):
     """
-    Convert datetime-like values to ISO strings.
+    Convert datetime-like values into ISO strings.
     """
 
     if not value:
@@ -269,6 +294,7 @@ def iso_datetime(value):
 def format_play_time(duration):
     """
     Convert timedelta into:
+
         42h 18m
 
     Returns None when unavailable.
@@ -281,6 +307,7 @@ def format_play_time(duration):
         total_seconds = int(
             duration.total_seconds()
         )
+
     except (
         AttributeError,
         TypeError,
@@ -289,6 +316,7 @@ def format_play_time(duration):
         return None
 
     hours = total_seconds // 3600
+
     minutes = (
         total_seconds % 3600
     ) // 60
@@ -323,12 +351,11 @@ def get_earned_achievements(
     platform,
 ):
     """
-    Fetch detailed trophy progress for one game
-    and return only earned trophies.
+    Fetch detailed trophy progress.
 
-    Returns:
-        list[dict]
-        or None when the detail request failed/unavailable.
+    Default platform is PS5.
+    If PS5 fails with Resource not found,
+    retry using PS4.
     """
 
     if not SYNC_ACHIEVEMENT_DETAILS:
@@ -347,34 +374,94 @@ def get_earned_achievements(
         return None
 
     if platform is None:
-        print(
-            "  Achievement details skipped: "
-            "platform unavailable."
+        platform = PlatformType.PS5
+
+    # -----------------------------------------------------
+    # TRY SELECTED PLATFORM
+    # -----------------------------------------------------
+
+    platforms_to_try = [
+        platform
+    ]
+
+    # If PS5 fails, try PS4
+    if platform == PlatformType.PS5:
+        platforms_to_try.append(
+            PlatformType.PS4
         )
 
-        return None
+    trophies = None
+    successful_platform = None
 
-    try:
-        trophies = list(
-            psn.trophies(
-                psn_title_id,
-                platform,
-                include_progress=True,
-                trophy_group_id="default",
-                limit=None,
-                page_size=200,
+    for current_platform in platforms_to_try:
+
+        print(
+            f"  Trying trophy platform: "
+            f"{current_platform}"
+        )
+
+        try:
+
+            trophies = list(
+                psn.trophies(
+                    psn_title_id,
+                    current_platform,
+                    include_progress=True,
+                    trophy_group_id="default",
+                    limit=None,
+                    page_size=200,
+                )
             )
-        )
 
-    except Exception as error:
-        print(
-            "  Achievement detail fetch failed:"
-        )
-        print(
-            f"    {error}"
-        )
+            successful_platform = (
+                current_platform
+            )
+
+            break
+
+        except Exception as error:
+
+            print(
+                f"  Trophy request failed "
+                f"for {current_platform}:"
+            )
+
+            print(
+                f"    {error}"
+            )
+
+            # Try PS4 if PS5 failed
+            if (
+                current_platform
+                == PlatformType.PS5
+            ):
+
+                print(
+                    "  → Retrying with PS4..."
+                )
+
+            else:
+
+                print(
+                    "  → Trophy details unavailable."
+                )
+
+    # -----------------------------------------------------
+    # BOTH PLATFORMS FAILED
+    # -----------------------------------------------------
+
+    if trophies is None:
 
         return None
+
+    print(
+        f"  ✓ Trophy platform used: "
+        f"{successful_platform}"
+    )
+
+    # -----------------------------------------------------
+    # EXTRACT EARNED TROPHIES
+    # -----------------------------------------------------
 
     earned_achievements = []
 
@@ -437,18 +524,32 @@ def get_earned_achievements(
 
 print("\nLoading games from Supabase...")
 
-response = (
-    supabase
-    .table("games")
-    .select(
-        """
-        id,
-        name,
-        psn_title_id
-        """
+try:
+
+    response = (
+        supabase
+        .table("games")
+        .select(
+            """
+            id,
+            name,
+            psn_title_id,
+            earned_achievements
+            """
+        )
+        .execute()
     )
-    .execute()
-)
+
+except Exception as error:
+
+    print(
+        "ERROR loading games from Supabase:"
+    )
+
+    print(error)
+
+    raise
+
 
 db_games = response.data or []
 
@@ -496,7 +597,7 @@ def find_matching_game(
 
     1. Existing psn_title_id
     2. Exact normalized name
-    3. Fuzzy name match >= 85
+    3. Fuzzy name match >= FUZZY_THRESHOLD
     """
 
     psn_title_id = get_title_id(
@@ -510,12 +611,15 @@ def find_matching_game(
     )
 
     if not psn_name:
-        return None, 0, "none"
+        return (
+            None,
+            0,
+            "none",
+        )
 
     normalized_psn_name = normalize_name(
         psn_name
     )
-
 
     # -----------------------------------------------------
     # 1. SAVED PSN TITLE ID
@@ -540,7 +644,6 @@ def find_matching_game(
                     "psn_title_id",
                 )
 
-
     # -----------------------------------------------------
     # 2. EXACT NAME
     # -----------------------------------------------------
@@ -550,15 +653,15 @@ def find_matching_game(
     )
 
     if exact:
+
         return (
             exact,
             100,
             "exact",
         )
 
-
     # -----------------------------------------------------
-    # 3. FUZZY
+    # 3. FUZZY MATCH
     # -----------------------------------------------------
 
     best_game = None
@@ -573,10 +676,8 @@ def find_matching_game(
         if not db_name:
             continue
 
-        normalized_db_name = (
-            normalize_name(
-                db_name
-            )
+        normalized_db_name = normalize_name(
+            db_name
         )
 
         if not normalized_db_name:
@@ -588,20 +689,20 @@ def find_matching_game(
         )
 
         if score > best_score:
+
             best_score = score
             best_game = game
-
 
     if (
         best_game is not None
         and best_score >= FUZZY_THRESHOLD
     ):
+
         return (
             best_game,
             best_score,
             "fuzzy",
         )
-
 
     return (
         None,
@@ -632,6 +733,7 @@ except Exception as error:
     print(
         "\nERROR while getting PSN trophy titles:"
     )
+
     print(error)
 
     raise
@@ -664,6 +766,7 @@ except Exception as error:
     print(
         "\nWARNING: Could not get PSN play statistics:"
     )
+
     print(error)
 
     psn_stats = []
@@ -685,6 +788,7 @@ for stat in psn_stats:
     )
 
     if normalized:
+
         stats_by_name[
             normalized
         ] = stat
@@ -706,9 +810,17 @@ sync_time = datetime.now(
 updated = 0
 skipped = 0
 errors = 0
+
 achievement_success = 0
 achievement_skipped = 0
+achievement_unchanged = 0
 
+new_achievement_games = 0
+
+
+# =========================================================
+# PROCESS EACH PSN GAME
+# =========================================================
 
 for index, psn_game in enumerate(
     psn_games,
@@ -724,16 +836,14 @@ for index, psn_game in enumerate(
     if not psn_name:
         continue
 
-
     print(
         f"\n[{index}/{len(psn_games)}] "
         f"{psn_name}"
     )
 
-
-    # -----------------------------------------------------
+    # =====================================================
     # MATCH GAME
-    # -----------------------------------------------------
+    # =====================================================
 
     (
         db_game,
@@ -743,7 +853,6 @@ for index, psn_game in enumerate(
         psn_game
     )
 
-
     if not db_game:
 
         print(
@@ -752,8 +861,8 @@ for index, psn_game in enumerate(
         )
 
         skipped += 1
-        continue
 
+        continue
 
     print(
         f"  → {db_game['name']}"
@@ -765,10 +874,9 @@ for index, psn_game in enumerate(
         f"({score:.1f}%)"
     )
 
-
-    # -----------------------------------------------------
+    # =====================================================
     # TROPHY SUMMARY
-    # -----------------------------------------------------
+    # =====================================================
 
     earned_trophies = getattr(
         psn_game,
@@ -781,7 +889,6 @@ for index, psn_game in enumerate(
         "defined_trophies",
         None,
     )
-
 
     earned = {
         "platinum": trophy_value(
@@ -802,7 +909,6 @@ for index, psn_game in enumerate(
         ),
     }
 
-
     total = {
         "platinum": trophy_value(
             defined_trophies,
@@ -822,21 +928,18 @@ for index, psn_game in enumerate(
         ),
     }
 
-
     progress = calculate_progress(
         earned,
         total,
     )
 
-
     psn_title_id = get_title_id(
         psn_game
     )
 
-
-    # -----------------------------------------------------
+    # =====================================================
     # PLAY STATS
-    # -----------------------------------------------------
+    # =====================================================
 
     normalized_psn_name = normalize_name(
         psn_name
@@ -850,7 +953,6 @@ for index, psn_game in enumerate(
     first_played_at = None
     last_played_at = None
 
-
     if play_stat:
 
         duration = getattr(
@@ -863,7 +965,6 @@ for index, psn_game in enumerate(
             duration
         )
 
-
         first_played = getattr(
             play_stat,
             "first_played_date_time",
@@ -875,7 +976,6 @@ for index, psn_game in enumerate(
             "last_played_date_time",
             None,
         )
-
 
         first_played_at = (
             iso_datetime(
@@ -914,105 +1014,29 @@ for index, psn_game in enumerate(
             "  Play stats: unavailable"
         )
 
-
-    # -----------------------------------------------------
+    # =====================================================
     # PLATFORM
-    # -----------------------------------------------------
+    # =====================================================
 
     platform = get_platform(
         psn_game
     )
 
     if platform:
+
         print(
             f"  Platform: {platform}"
         )
+
     else:
+
         print(
             "  Platform: unavailable"
         )
 
-
-    # -----------------------------------------------------
-    # ACHIEVEMENT DETAILS
-    # -----------------------------------------------------
-
-    earned_achievements = None
-
-    last_achievement = None
-
-
-    # Only attempt detailed trophies when:
-    # - we know the communication ID
-    # - we know platform
-    # - the game has trophy data
-    #
-    # This avoids trying to fetch progress for
-    # games that have no usable trophy set.
-
-    has_trophy_data = (
-        (
-            total["platinum"]
-            + total["gold"]
-            + total["silver"]
-            + total["bronze"]
-        )
-        > 0
-    )
-
-
-    if (
-        SYNC_ACHIEVEMENT_DETAILS
-        and has_trophy_data
-        and psn_title_id
-        and platform
-    ):
-
-        print(
-            "  Fetching achievement details..."
-        )
-
-        earned_achievements = (
-            get_earned_achievements(
-                psn_game,
-                platform,
-            )
-        )
-
-
-        if earned_achievements is not None:
-
-            achievement_success += 1
-
-            print(
-                f"  ✓ Earned achievements: "
-                f"{len(earned_achievements)}"
-            )
-
-
-            if earned_achievements:
-
-                last_achievement = (
-                    earned_achievements[0]
-                )
-
-                print(
-                    "  🏆 Last achievement: "
-                    f"{last_achievement['name']}"
-                )
-
-        else:
-
-            achievement_skipped += 1
-
-    else:
-
-        achievement_skipped += 1
-
-
-    # -----------------------------------------------------
-    # DISPLAY TROPHY SUMMARY
-    # -----------------------------------------------------
+    # =====================================================
+    # TROPHY DISPLAY
+    # =====================================================
 
     print(
         f"  🏆 Platinum: "
@@ -1043,7 +1067,6 @@ for index, psn_game in enumerate(
         f"{progress}%"
     )
 
-
     if psn_title_id:
 
         print(
@@ -1051,20 +1074,163 @@ for index, psn_game in enumerate(
             f"{psn_title_id}"
         )
 
+    # =====================================================
+    # CHECK ACHIEVEMENT CHANGES
+    # =====================================================
+
+    old_earned_achievements = (
+        db_game.get(
+            "earned_achievements"
+        )
+    )
+
+    new_count = (
+        earned["platinum"]
+        + earned["gold"]
+        + earned["silver"]
+        + earned["bronze"]
+    )
+
+    earned_achievements = None
+    last_achievement = None
+
+    should_fetch_achievement_details = False
 
     # -----------------------------------------------------
-    # BUILD UPDATE DATA
+    # EXISTING ACHIEVEMENT DATA
     # -----------------------------------------------------
+
+    if isinstance(
+        old_earned_achievements,
+        list,
+    ):
+
+        old_count = len(
+            old_earned_achievements
+        )
+
+        if new_count > old_count:
+
+            print(
+                f"  🏆 New achievements: "
+                f"{old_count} → {new_count}"
+            )
+
+            should_fetch_achievement_details = True
+
+            new_achievement_games += 1
+
+        elif new_count < old_count:
+
+            # This should normally not happen,
+            # but if PSN reports fewer trophies,
+            # refresh the detailed data.
+
+            print(
+                f"  ⚠ Achievement count decreased: "
+                f"{old_count} → {new_count}"
+            )
+
+            should_fetch_achievement_details = True
+
+        else:
+
+            print(
+                f"  ✓ No new achievements "
+                f"({old_count} → {new_count})"
+            )
+
+            achievement_unchanged += 1
+
+    # -----------------------------------------------------
+    # NO EXISTING ACHIEVEMENT DATA
+    # -----------------------------------------------------
+
+    else:
+
+        print(
+            f"  🏆 Achievement data not initialized "
+            f"({new_count} earned)"
+        )
+
+        should_fetch_achievement_details = True
+
+    # =====================================================
+    # ACHIEVEMENT DETAILS
+    # =====================================================
+
+    has_trophy_data = (
+        (
+            total["platinum"]
+            + total["gold"]
+            + total["silver"]
+            + total["bronze"]
+        )
+        > 0
+    )
+
+    if (
+        SYNC_ACHIEVEMENT_DETAILS
+        and has_trophy_data
+        and psn_title_id
+        and platform
+        and should_fetch_achievement_details
+    ):
+
+        print(
+            "  Fetching achievement details..."
+        )
+
+        earned_achievements = (
+            get_earned_achievements(
+                psn_game,
+                platform,
+            )
+        )
+
+        if earned_achievements is not None:
+
+            achievement_success += 1
+
+            print(
+                f"  ✓ Earned achievements: "
+                f"{len(earned_achievements)}"
+            )
+
+            if earned_achievements:
+
+                last_achievement = (
+                    earned_achievements[0]
+                )
+
+                print(
+                    "  🏆 Last achievement: "
+                    f"{last_achievement['name']}"
+                )
+
+        else:
+
+            achievement_skipped += 1
+
+    elif should_fetch_achievement_details:
+
+        achievement_skipped += 1
+
+    # =====================================================
+    # BUILD UPDATE DATA
+    # =====================================================
 
     update_data = {
 
+        # -------------------------------------------------
         # Trophy summary
+        # -------------------------------------------------
+
         "earned_platinum":
             earned["platinum"],
 
         "total_platinum":
             total["platinum"],
-
 
         "earned_gold":
             earned["gold"],
@@ -1072,13 +1238,11 @@ for index, psn_game in enumerate(
         "total_gold":
             total["gold"],
 
-
         "earned_silver":
             earned["silver"],
 
         "total_silver":
             total["silver"],
-
 
         "earned_bronze":
             earned["bronze"],
@@ -1086,19 +1250,16 @@ for index, psn_game in enumerate(
         "total_bronze":
             total["bronze"],
 
-
         "trophy_progress":
             progress,
-
 
         "trophy_synced_at":
             sync_time,
     }
 
-
-    # -----------------------------------------------------
+    # =====================================================
     # PLAY DATA
-    # -----------------------------------------------------
+    # =====================================================
 
     if play_time is not None:
 
@@ -1106,13 +1267,11 @@ for index, psn_game in enumerate(
             "play_time"
         ] = play_time
 
-
     if first_played_at is not None:
 
         update_data[
             "first_played_at"
         ] = first_played_at
-
 
     if last_played_at is not None:
 
@@ -1120,14 +1279,20 @@ for index, psn_game in enumerate(
             "last_played_at"
         ] = last_played_at
 
-
-    # -----------------------------------------------------
+    # =====================================================
     # ACHIEVEMENT DATA
-    # -----------------------------------------------------
+    # =====================================================
     #
-    # IMPORTANT:
-    # If achievement detail fetch failed,
-    # don't overwrite existing Supabase data.
+    # Important:
+    #
+    # If achievement detail fetch succeeded:
+    #     overwrite with fresh data.
+    #
+    # If detail fetch was not needed:
+    #     keep existing data.
+    #
+    # If detail fetch failed:
+    #     keep existing data.
     #
 
     if earned_achievements is not None:
@@ -1135,7 +1300,6 @@ for index, psn_game in enumerate(
         update_data[
             "earned_achievements"
         ] = earned_achievements
-
 
         if last_achievement:
 
@@ -1171,10 +1335,9 @@ for index, psn_game in enumerate(
                 "last_achievement_at"
             ] = None
 
-
-    # -----------------------------------------------------
+    # =====================================================
     # SAVE PSN TITLE ID
-    # -----------------------------------------------------
+    # =====================================================
 
     if psn_title_id:
 
@@ -1182,10 +1345,13 @@ for index, psn_game in enumerate(
             "psn_title_id"
         ] = psn_title_id
 
-
-    # -----------------------------------------------------
+    # =====================================================
     # UPDATE SUPABASE
-    # -----------------------------------------------------
+    # =====================================================
+
+    print(
+        "  Updating Supabase..."
+    )
 
     try:
 
@@ -1205,7 +1371,6 @@ for index, psn_game in enumerate(
         )
 
         updated += 1
-
 
     except Exception as error:
 
@@ -1260,6 +1425,16 @@ print(
 print(
     f"Achievement skipped:    "
     f"{achievement_skipped}"
+)
+
+print(
+    f"Achievement unchanged:  "
+    f"{achievement_unchanged}"
+)
+
+print(
+    f"Games with new trophies: "
+    f"{new_achievement_games}"
 )
 
 print(
