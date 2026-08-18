@@ -544,6 +544,91 @@ def get_earned_achievements(
 
     return earned_achievements
 
+def find_play_stat(psn_game, psn_stats):
+    """
+    Find play statistics for a PSN trophy title.
+
+    Matching:
+    1. Exact normalized name
+    2. Fuzzy name >= FUZZY_THRESHOLD
+    """
+
+    psn_name = getattr(
+        psn_game,
+        "title_name",
+        None,
+    )
+
+    if not psn_name:
+        return None
+
+    normalized_psn_name = normalize_name(
+        psn_name
+    )
+
+    # -----------------------------------------------------
+    # EXACT
+    # -----------------------------------------------------
+
+    for stat in psn_stats:
+
+        stat_name = get_stat_name(
+            stat
+        )
+
+        if not stat_name:
+            continue
+
+        normalized_stat_name = normalize_name(
+            stat_name
+        )
+
+        if (
+            normalized_stat_name
+            == normalized_psn_name
+        ):
+            return stat
+
+    # -----------------------------------------------------
+    # FUZZY
+    # -----------------------------------------------------
+
+    best_stat = None
+    best_score = 0
+
+    for stat in psn_stats:
+
+        stat_name = get_stat_name(
+            stat
+        )
+
+        if not stat_name:
+            continue
+
+        normalized_stat_name = normalize_name(
+            stat_name
+        )
+
+        if not normalized_stat_name:
+            continue
+
+        score = fuzz.token_set_ratio(
+            normalized_psn_name,
+            normalized_stat_name,
+        )
+
+        if score > best_score:
+            best_score = score
+            best_stat = stat
+
+    if (
+        best_stat is not None
+        and best_score >= FUZZY_THRESHOLD
+    ):
+        return best_stat
+
+    return None
+
 
 # =========================================================
 # LOAD DATABASE GAMES
@@ -799,26 +884,26 @@ except Exception as error:
     psn_stats = []
 
 
-stats_by_name = {}
+# stats_by_name = {}
 
-for stat in psn_stats:
+# for stat in psn_stats:
 
-    stat_name = get_stat_name(
-        stat
-    )
+#     stat_name = get_stat_name(
+#         stat
+#     )
 
-    if not stat_name:
-        continue
+#     if not stat_name:
+#         continue
 
-    normalized = normalize_name(
-        stat_name
-    )
+#     normalized = normalize_name(
+#         stat_name
+#     )
 
-    if normalized:
+#     if normalized:
 
-        stats_by_name[
-            normalized
-        ] = stat
+#         stats_by_name[
+#             normalized
+#         ] = stat
 
 
 print(
@@ -968,12 +1053,9 @@ for index, psn_game in enumerate(
     # PLAY STATS
     # =====================================================
 
-    normalized_psn_name = normalize_name(
-        psn_name
-    )
-
-    play_stat = stats_by_name.get(
-        normalized_psn_name
+    play_stat = find_play_stat(
+        psn_game,
+        psn_stats,
     )
 
     play_time = None
@@ -1247,42 +1329,137 @@ for index, psn_game in enumerate(
     # BUILD UPDATE DATA
     # =====================================================
 
-    update_data = {
+    # Play data is always allowed to update.
+    update_data = {}
 
-        # -------------------------------------------------
-        # Trophy summary
-        # -------------------------------------------------
+    # =====================================================
+    # PLAY DATA
+    # =====================================================
 
-        "earned_platinum":
-            earned["platinum"],
+    if play_time is not None:
 
-        "total_platinum":
-            total["platinum"],
+        update_data["play_time"] = play_time
 
-        "earned_gold":
-            earned["gold"],
+    if first_played_at is not None:
 
-        "total_gold":
-            total["gold"],
+        update_data["first_played_at"] = first_played_at
 
-        "earned_silver":
-            earned["silver"],
+    if last_played_at is not None:
 
-        "total_silver":
-            total["silver"],
+        update_data["last_played_at"] = last_played_at
 
-        "earned_bronze":
-            earned["bronze"],
 
-        "total_bronze":
-            total["bronze"],
+    # =====================================================
+    # TROPHY SUMMARY
+    # =====================================================
+    #
+    # Only update trophy summary when:
+    #
+    # 1. There is no previous achievement data
+    # OR
+    # 2. The earned trophy count changed
+    #
+    # This avoids unnecessary Supabase writes.
+    #
 
-        "trophy_progress":
-            progress,
+    should_update_trophy_summary = (
+        not isinstance(
+            old_earned_achievements,
+            list,
+        )
+        or new_count
+        != len(old_earned_achievements)
+    )
 
-        "trophy_synced_at":
-            sync_time,
-    }
+
+    if should_update_trophy_summary:
+
+        update_data.update({
+
+            "earned_platinum":
+                earned["platinum"],
+
+            "total_platinum":
+                total["platinum"],
+
+            "earned_gold":
+                earned["gold"],
+
+            "total_gold":
+                total["gold"],
+
+            "earned_silver":
+                earned["silver"],
+
+            "total_silver":
+                total["silver"],
+
+            "earned_bronze":
+                earned["bronze"],
+
+            "total_bronze":
+                total["bronze"],
+
+            "trophy_progress":
+                progress,
+        })
+
+
+    # =====================================================
+    # ACHIEVEMENT DETAILS
+    # =====================================================
+
+    if earned_achievements is not None:
+
+        update_data[
+            "earned_achievements"
+        ] = earned_achievements
+
+        if last_achievement:
+
+            update_data[
+                "last_achievement_name"
+            ] = last_achievement["name"]
+
+            update_data[
+                "last_achievement_detail"
+            ] = last_achievement["detail"]
+
+            update_data[
+                "last_achievement_at"
+            ] = last_achievement["earned_at"]
+
+        else:
+
+            update_data[
+                "last_achievement_name"
+            ] = None
+
+            update_data[
+                "last_achievement_detail"
+            ] = None
+
+            update_data[
+                "last_achievement_at"
+            ] = None
+
+        # IMPORTANT:
+        # Only mark trophy data as synced after
+        # successfully fetching detailed trophies.
+        update_data[
+            "trophy_synced_at"
+        ] = sync_time
+
+
+    # =====================================================
+    # SAVE PSN TITLE ID
+    # =====================================================
+
+    if psn_title_id:
+
+        update_data[
+            "psn_title_id"
+        ] = psn_title_id
 
     # =====================================================
     # PLAY DATA
@@ -1376,8 +1553,18 @@ for index, psn_game in enumerate(
     # UPDATE SUPABASE
     # =====================================================
 
+    if not update_data:
+
+        print(
+            "  ✓ Nothing to update"
+        )
+
+        continue
+
+
     print(
-        "  Updating Supabase..."
+        f"  Updating Supabase "
+        f"({len(update_data)} fields)..."
     )
 
     try:
@@ -1398,6 +1585,18 @@ for index, psn_game in enumerate(
         )
 
         updated += 1
+
+    except Exception as error:
+
+        print(
+            "  ✗ Supabase update failed:"
+        )
+
+        print(
+            f"    {error}"
+        )
+
+        errors += 1
 
     except Exception as error:
 
