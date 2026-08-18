@@ -403,46 +403,113 @@ function openGameDetails(game) {
   // EARNED ACHIEVEMENTS
   // =======================================================
 
+  // const achievements = Array.isArray(game.earned_achievements)
+  //   ? game.earned_achievements
+  //   : [];
+
+  // detailsAchievementCount.textContent = achievements.length;
+
+  // if (achievements.length === 0) {
+  //   detailsAchievementsList.innerHTML = `
+  //     <div class="achievements-empty">
+  //       No earned achievements yet.
+  //     </div>
+  //   `;
+  // } else {
+  //   detailsAchievementsList.innerHTML = achievements
+  //     .map((achievement) => {
+  //       const trophyIcon = getTrophyIcon(achievement.type);
+
+  //       return `
+  //       <div class="earned-achievement">
+
+  //         <div class="earned-achievement-name">
+  //           <span class="trophy-icon">
+  //             ${trophyIcon}
+  //           </span>
+
+  //           <span>
+  //             ${escapeHTML(achievement.name || "Unknown achievement")}
+  //           </span>
+  //         </div>
+
+  //         <div class="earned-achievement-detail">
+  //           ${escapeHTML(achievement.detail || "No description available.")}
+  //         </div>
+
+  //         <div class="earned-achievement-date">
+  //           ${formatGameDate(achievement.earned_at)}
+  //         </div>
+
+  //       </div>
+  //     `;
+  //     })
+  //     .join("");
+  // }
+
   const achievements = Array.isArray(game.earned_achievements)
     ? game.earned_achievements
     : [];
 
+  // Sort ONLY the displayed list:
+  // Platinum → Gold → Silver → Bronze
+  // Same trophy type → newest → oldest
+  const trophyOrder = {
+    platinum: 0,
+    gold: 1,
+    silver: 2,
+    bronze: 3,
+  };
+
+  const sortedAchievements = [...achievements].sort((a, b) => {
+    const typeA = trophyOrder[String(a.type || "").toLowerCase()] ?? 99;
+    const typeB = trophyOrder[String(b.type || "").toLowerCase()] ?? 99;
+
+    // Higher trophy type first
+    if (typeA !== typeB) {
+      return typeA - typeB;
+    }
+
+    // Same type → newest first
+    return new Date(b.earned_at) - new Date(a.earned_at);
+  });
+
   detailsAchievementCount.textContent = achievements.length;
 
-  if (achievements.length === 0) {
+  if (sortedAchievements.length === 0) {
     detailsAchievementsList.innerHTML = `
       <div class="achievements-empty">
         No earned achievements yet.
       </div>
     `;
   } else {
-    detailsAchievementsList.innerHTML = achievements
+    detailsAchievementsList.innerHTML = sortedAchievements
       .map((achievement) => {
         const trophyIcon = getTrophyIcon(achievement.type);
 
         return `
-        <div class="earned-achievement">
+          <div class="earned-achievement">
 
-          <div class="earned-achievement-name">
-            <span class="trophy-icon">
-              ${trophyIcon}
-            </span>
+            <div class="earned-achievement-name">
+              <span class="trophy-icon">
+                ${trophyIcon}
+              </span>
 
-            <span>
-              ${escapeHTML(achievement.name || "Unknown achievement")}
-            </span>
+              <span>
+                ${escapeHTML(achievement.name || "Unknown achievement")}
+              </span>
+            </div>
+
+            <div class="earned-achievement-detail">
+              ${escapeHTML(achievement.detail || "No description available.")}
+            </div>
+
+            <div class="earned-achievement-date">
+              ${formatGameDate(achievement.earned_at)}
+            </div>
+
           </div>
-
-          <div class="earned-achievement-detail">
-            ${escapeHTML(achievement.detail || "No description available.")}
-          </div>
-
-          <div class="earned-achievement-date">
-            ${formatGameDate(achievement.earned_at)}
-          </div>
-
-        </div>
-      `;
+        `;
       })
       .join("");
   }
