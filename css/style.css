@@ -180,12 +180,10 @@ h1 {
   width: 40%;
   height: 100%;
 
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.9),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.9),
+      transparent);
 
   transform: skewX(-25deg);
 
@@ -1012,7 +1010,7 @@ h1 {
 
 /* Left side */
 
-.game-select-header > span:first-child {
+.game-select-header>span:first-child {
   display: flex;
 
   align-items: center;
@@ -1238,9 +1236,31 @@ h1 {
 
   padding: 25px;
 
-  overflow: hidden;
+  overflow-y: auto;
 
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* Scrollbar */
+
+.game-details-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.game-details-content::-webkit-scrollbar-track {
+  background: #171717;
+
+  border-radius: 999px;
+}
+
+.game-details-content::-webkit-scrollbar-thumb {
+  background: #444;
+
+  border-radius: 999px;
+}
+
+.game-details-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .game-details-header {
@@ -1429,35 +1449,13 @@ h1 {
   text-align: center;
 }
 
-.achievements-list {
+/* .achievements-list {
   max-height: 280px;
 
   overflow-y: auto;
 
   padding-right: 5px;
-}
-
-/* Scrollbar */
-
-.achievements-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.achievements-list::-webkit-scrollbar-track {
-  background: #171717;
-
-  border-radius: 999px;
-}
-
-.achievements-list::-webkit-scrollbar-thumb {
-  background: #444;
-
-  border-radius: 999px;
-}
-
-.achievements-list::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
+} */
 
 /* Individual achievement */
 
@@ -1549,9 +1547,9 @@ h1 {
     padding: 12px;
   }
 
-  .achievements-list {
+  /* .achievements-list {
     max-height: 300px;
-  }
+  } */
 }
 
 .earned-achievement-name {
