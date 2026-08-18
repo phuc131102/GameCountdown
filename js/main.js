@@ -42,6 +42,8 @@ const detailsFirstPlayed = document.getElementById("detailsFirstPlayed");
 
 const detailsLastPlayed = document.getElementById("detailsLastPlayed");
 
+const detailsTrophySync = document.getElementById("detailsTrophySync");
+
 const detailsLastAchievement = document.getElementById(
   "detailsLastAchievement",
 );
@@ -360,6 +362,18 @@ function openGameDetails(game) {
   // =======================================================
 
   detailsLastPlayed.textContent = formatGameDate(game.last_played_at);
+
+  // =======================================================
+  // TROPHY SYNC
+  // =======================================================
+
+  if (game.trophy_synced_at) {
+    detailsTrophySync.textContent =
+      `${formatGameDate(game.trophy_synced_at)}`;
+  } else {
+    detailsTrophySync.textContent =
+      "Trophy data has not been synced yet.";
+  }
 
   // =======================================================
   // LAST ACHIEVEMENT

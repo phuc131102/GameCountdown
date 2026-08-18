@@ -1332,6 +1332,11 @@ for index, psn_game in enumerate(
     # Play data is always allowed to update.
     update_data = {}
 
+    # Update trophy sync time every time
+    # trophy data is checked successfully.
+    if has_trophy_data:
+        update_data["trophy_synced_at"] = sync_time
+
     # =====================================================
     # PLAY DATA
     # =====================================================
@@ -1446,9 +1451,9 @@ for index, psn_game in enumerate(
         # IMPORTANT:
         # Only mark trophy data as synced after
         # successfully fetching detailed trophies.
-        update_data[
-            "trophy_synced_at"
-        ] = sync_time
+        # update_data[
+        #     "trophy_synced_at"
+        # ] = sync_time
 
 
     # =====================================================
