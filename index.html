@@ -72,22 +72,25 @@
         <div id="detailsTrophySync" class="trophy-sync-info">—</div>
       </div>
 
-      <!-- Last Achievement -->
-      <div class="game-details-section">
-        <h3>LAST TROPHY</h3>
-
-        <div id="detailsLastAchievement" class="last-achievement">
-          <div class="achievement-name">—</div>
-          <div class="achievement-detail">—</div>
-          <div class="achievement-date">—</div>
-        </div>
-      </div>
-
-      <!-- Earned Achievements -->
+      <!-- Earned Trophies -->
       <div class="game-details-section achievements-section">
         <div class="achievements-title-row">
           <h3>EARNED TROPHIES</h3>
-          <span id="detailsAchievementCount"> 0 </span>
+          <span id="detailsAchievementCount">0</span>
+        </div>
+
+        <div class="achievement-sort-tabs">
+          <button
+            type="button"
+            class="achievement-sort-tab active"
+            data-sort="recent"
+          >
+            Recent
+          </button>
+
+          <button type="button" class="achievement-sort-tab" data-sort="type">
+            Type
+          </button>
         </div>
 
         <div id="detailsAchievementsList" class="achievements-list"></div>
