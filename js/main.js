@@ -235,7 +235,9 @@ function renderTrophySection(game, released) {
       <div class="trophy-grid">
 
         <div class="trophy-item platinum">
-          <div class="trophy-icon">🏆</div>
+          <div class="trophy-icon">
+            <img src="./image/platinum.png" alt="Platinum" />
+          </div>
           <div class="trophy-name">PLATINUM</div>
           <div class="trophy-count">
             ${earnedPlatinum}/${totalPlatinum}
@@ -243,7 +245,9 @@ function renderTrophySection(game, released) {
         </div>
 
         <div class="trophy-item gold">
-          <div class="trophy-icon">🥇</div>
+          <div class="trophy-icon">
+            <img src="./image/gold.png" alt="Gold" />
+          </div>
           <div class="trophy-name">GOLD</div>
           <div class="trophy-count">
             ${earnedGold}/${totalGold}
@@ -251,7 +255,9 @@ function renderTrophySection(game, released) {
         </div>
 
         <div class="trophy-item silver">
-          <div class="trophy-icon">🥈</div>
+          <div class="trophy-icon">
+            <img src="./image/silver.png" alt="Silver" />
+          </div>
           <div class="trophy-name">SILVER</div>
           <div class="trophy-count">
             ${earnedSilver}/${totalSilver}
@@ -259,7 +265,9 @@ function renderTrophySection(game, released) {
         </div>
 
         <div class="trophy-item bronze">
-          <div class="trophy-icon">🥉</div>
+          <div class="trophy-icon">
+            <img src="./image/bronze.png" alt="Bronze" />
+          </div>
           <div class="trophy-name">BRONZE</div>
           <div class="trophy-count">
             ${earnedBronze}/${totalBronze}
@@ -291,19 +299,19 @@ function renderTrophySection(game, released) {
 function getTrophyIcon(type) {
   switch (String(type || "").toLowerCase()) {
     case "platinum":
-      return "🏆";
+      return '<img src="./image/platinum.png" alt="Platinum" />';
 
     case "gold":
-      return "🥇";
+      return '<img src="./image/gold.png" alt="Gold" />';
 
     case "silver":
-      return "🥈";
+      return '<img src="./image/silver.png" alt="Silver" />';
 
     case "bronze":
-      return "🥉";
+      return '<img src="./image/bronze.png" alt="Bronze" />';
 
     default:
-      return "???";
+      return "";
   }
 }
 

@@ -317,10 +317,21 @@ h1 {
 /* Trophy icon */
 
 .trophy-icon {
-  font-size: 22px;
-  line-height: 1;
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   margin-bottom: 6px;
+}
+
+.trophy-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 /* Trophy name */
@@ -439,7 +450,7 @@ h1 {
   right: 30px;
   bottom: 30px;
 
-  z-index: 999;
+  z-index: 99;
 }
 
 .btn {
@@ -769,7 +780,8 @@ h1 {
   }
 
   .trophy-icon {
-    font-size: 19px;
+    width: 32px;
+    height: 32px;
   }
 
   .trophy-name {
@@ -799,9 +811,6 @@ h1 {
    ========================================================= */
 
 @media (max-width: 380px) {
-  .trophy-icon {
-    font-size: 21px;
-  }
 
   .trophy-name {
     font-size: 9px;
@@ -1350,7 +1359,8 @@ h1 {
   color: #777;
 }
 
-.game-stat-value, .trophy-sync-info {
+.game-stat-value,
+.trophy-sync-info {
   display: block;
 
   font-size: 14px;
@@ -1574,6 +1584,11 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+}
 
-  font-size: 17px;
+.trophy-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
