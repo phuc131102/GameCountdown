@@ -32,11 +32,35 @@ const gameSelectorModal = document.getElementById("gameSelectorModal");
 
 const gameDetailsModal = document.getElementById("gameDetailsModal");
 
+const statsModal = document.getElementById("statsModal");
+
+const openStatsBtn = document.getElementById("openStats");
+
+const closeStatsBtn = document.getElementById("closeStats");
+
+const statsTotalPlayTime = document.getElementById("statsTotalPlayTime");
+
+const statsTotalTrophies = document.getElementById("statsTotalTrophies");
+
+const statsTotalSessions = document.getElementById("statsTotalSessions");
+
+const statsLongestGame = document.getElementById("statsLongestGame");
+
+const statsLongestTime = document.getElementById("statsLongestTime");
+
+const statsMostPlayedGame = document.getElementById("statsMostPlayedGame");
+
+const statsMostPlayedSessions = document.getElementById(
+  "statsMostPlayedSessions",
+);
+
 const closeGameDetailsBtn = document.getElementById("closeGameDetails");
 
 const gameDetailsTitle = document.getElementById("gameDetailsTitle");
 
 const detailsPlayTime = document.getElementById("detailsPlayTime");
+
+const detailsPlaySessions = document.getElementById("detailsPlaySessions");
 
 const detailsFirstPlayed = document.getElementById("detailsFirstPlayed");
 
@@ -316,6 +340,168 @@ function getTrophyIcon(type) {
 }
 
 // =========================================================
+// GAMING STATISTICS
+// =========================================================
+
+function parsePlayTime(value) {
+  if (!value) {
+    return 0;
+  }
+
+  const text = String(value).toLowerCase();
+
+  let totalMinutes = 0;
+
+  const days = text.match(/(\d+(?:\.\d+)?)\s*d/);
+  const hours = text.match(/(\d+(?:\.\d+)?)\s*h/);
+  const minutes = text.match(/(\d+(?:\.\d+)?)\s*m/);
+
+  if (days) {
+    totalMinutes += Number(days[1]) * 24 * 60;
+  }
+
+  if (hours) {
+    totalMinutes += Number(hours[1]) * 60;
+  }
+
+  if (minutes) {
+    totalMinutes += Number(minutes[1]);
+  }
+
+  return totalMinutes;
+}
+
+function formatTotalPlayTime(totalMinutes) {
+  if (!totalMinutes || totalMinutes <= 0) {
+    return "0h";
+  }
+
+  const totalHours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (totalHours === 0) {
+    return `${minutes}m`;
+  }
+
+  if (minutes === 0) {
+    return `${totalHours}h`;
+  }
+
+  return `${totalHours}h ${minutes}m`;
+}
+
+function updateGamingStats() {
+  let totalPlayMinutes = 0;
+
+  let totalTrophies = 0;
+
+  let totalSessions = 0;
+
+  let longestGame = null;
+  let longestGameMinutes = 0;
+
+  let mostPlayedGame = null;
+  let mostPlayedSessions = 0;
+
+  games.forEach((game) => {
+    // -----------------------------------------
+    // PLAY TIME
+    // -----------------------------------------
+
+    const playMinutes = parsePlayTime(game.play_time);
+
+    totalPlayMinutes += playMinutes;
+
+    if (playMinutes > longestGameMinutes) {
+      longestGameMinutes = playMinutes;
+      longestGame = game;
+    }
+
+    // -----------------------------------------
+    // TROPHIES
+    // -----------------------------------------
+
+    totalTrophies +=
+      getTrophyValue(game, "earned_platinum") +
+      getTrophyValue(game, "earned_gold") +
+      getTrophyValue(game, "earned_silver") +
+      getTrophyValue(game, "earned_bronze");
+
+    // -----------------------------------------
+    // PLAY SESSIONS
+    // -----------------------------------------
+
+    const sessions = Number(game.play_sessions);
+
+    if (Number.isFinite(sessions) && sessions >= 0) {
+      totalSessions += sessions;
+
+      if (sessions > mostPlayedSessions) {
+        mostPlayedSessions = sessions;
+        mostPlayedGame = game;
+      }
+    }
+  });
+
+  // -----------------------------------------
+  // DISPLAY TOTALS
+  // -----------------------------------------
+
+  statsTotalPlayTime.textContent = formatTotalPlayTime(totalPlayMinutes);
+
+  statsTotalTrophies.textContent = totalTrophies.toLocaleString();
+
+  statsTotalSessions.textContent = totalSessions.toLocaleString();
+
+  // -----------------------------------------
+  // LONGEST PLAYED GAME
+  // -----------------------------------------
+
+  if (longestGame) {
+    statsLongestGame.textContent = longestGame.name || "Unknown Game";
+
+    statsLongestTime.textContent = formatTotalPlayTime(longestGameMinutes);
+  } else {
+    statsLongestGame.textContent = "No data";
+
+    statsLongestTime.textContent = "—";
+  }
+
+  // -----------------------------------------
+  // MOST PLAYED GAME
+  // -----------------------------------------
+
+  if (mostPlayedGame) {
+    statsMostPlayedGame.textContent = mostPlayedGame.name || "Unknown Game";
+
+    statsMostPlayedSessions.textContent = `${mostPlayedSessions.toLocaleString()} sessions`;
+  } else {
+    statsMostPlayedGame.textContent = "No data";
+
+    statsMostPlayedSessions.textContent = "—";
+  }
+}
+
+// Open stats
+openStatsBtn.addEventListener("click", () => {
+  updateGamingStats();
+
+  statsModal.style.display = "flex";
+});
+
+// Close stats
+closeStatsBtn.addEventListener("click", () => {
+  statsModal.style.display = "none";
+});
+
+// Click outside modal
+statsModal.addEventListener("click", (event) => {
+  if (event.target === statsModal) {
+    statsModal.style.display = "none";
+  }
+});
+
+// =========================================================
 // GAME DETAILS MODAL
 // =========================================================
 
@@ -360,6 +546,13 @@ function openGameDetails(game) {
   detailsPlayTime.textContent = game.play_time || "—";
 
   // =======================================================
+  // PLAY SESSIONS
+  // =======================================================
+
+  detailsPlaySessions.textContent =
+    game.play_sessions != null ? game.play_sessions : "—";
+
+  // =======================================================
   // FIRST PLAY
   // =======================================================
 
@@ -376,11 +569,9 @@ function openGameDetails(game) {
   // =======================================================
 
   if (game.trophy_synced_at) {
-    detailsTrophySync.textContent =
-      `${formatGameDate(game.trophy_synced_at)}`;
+    detailsTrophySync.textContent = `${formatGameDate(game.trophy_synced_at)}`;
   } else {
-    detailsTrophySync.textContent =
-      "Trophy data has not been synced yet.";
+    detailsTrophySync.textContent = "Trophy data has not been synced yet.";
   }
 
   // =======================================================

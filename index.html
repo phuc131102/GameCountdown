@@ -49,6 +49,11 @@
           </div>
 
           <div class="game-stat">
+            <span class="game-stat-label">Play Sessions</span>
+            <span id="detailsPlaySessions" class="game-stat-value">—</span>
+          </div>
+
+          <div class="game-stat">
             <span class="game-stat-label">First Play</span>
             <span id="detailsFirstPlayed" class="game-stat-value"> — </span>
           </div>
@@ -94,6 +99,7 @@
     <!-- Top bar containing controls (e.g. open add modal) -->
     <div class="top-bar">
       <button id="openGameSelector" class="selector-btn">☰</button>
+      <button id="openStats" class="stats-btn">📊</button>
       <!-- Button to open the "Add Game" modal (hidden by default) -->
       <button id="openAdd" class="btn" style="display: none">+</button>
     </div>
@@ -262,6 +268,62 @@
         <div class="modal-buttons">
           <button id="cancelAdd">Cancel</button>
           <button id="saveAdd">Add Game</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gaming Stats Modal -->
+    <div id="statsModal" class="modal stats-modal">
+      <div class="stats-content">
+        <div class="stats-header">
+          <h2>Gaming Statistics</h2>
+
+          <button id="closeStats" class="stats-close" aria-label="Close">
+            &times;
+          </button>
+        </div>
+
+        <div class="stats-grid">
+          <!-- Total Play Time -->
+          <div class="stats-card">
+            <div class="stats-card-icon">⏱️</div>
+            <div class="stats-card-label">TOTAL PLAY TIME</div>
+            <div id="statsTotalPlayTime" class="stats-card-value">—</div>
+          </div>
+
+          <!-- Total Trophies -->
+          <div class="stats-card">
+            <div class="stats-card-icon">🏆</div>
+            <div class="stats-card-label">TOTAL TROPHIES</div>
+            <div id="statsTotalTrophies" class="stats-card-value">—</div>
+          </div>
+
+          <!-- Total Sessions -->
+          <div class="stats-card">
+            <div class="stats-card-icon">🎮</div>
+            <div class="stats-card-label">TOTAL PLAY SESSIONS</div>
+            <div id="statsTotalSessions" class="stats-card-value">—</div>
+          </div>
+
+          <!-- Longest Played -->
+          <div class="stats-card stats-highlight">
+            <div class="stats-card-icon">🔥</div>
+            <div class="stats-card-label">LONGEST PLAYED GAME</div>
+
+            <div id="statsLongestGame" class="stats-game-name">—</div>
+
+            <div id="statsLongestTime" class="stats-game-value">—</div>
+          </div>
+
+          <!-- Most Played -->
+          <div class="stats-card stats-highlight">
+            <div class="stats-card-icon">🎯</div>
+            <div class="stats-card-label">MOST PLAYED GAME</div>
+
+            <div id="statsMostPlayedGame" class="stats-game-name">—</div>
+
+            <div id="statsMostPlayedSessions" class="stats-game-value">—</div>
+          </div>
         </div>
       </div>
     </div>

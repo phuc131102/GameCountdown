@@ -451,6 +451,10 @@ h1 {
   bottom: 30px;
 
   z-index: 99;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .btn {
@@ -1333,9 +1337,9 @@ h1 {
 .game-stats-grid {
   display: grid;
 
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 
-  gap: 10px;
+  gap: 5px;
 }
 
 .game-stat {
@@ -1591,4 +1595,349 @@ h1 {
   height: 100%;
   object-fit: contain;
   display: block;
+}
+
+/* =========================================================
+   GAMING STATS BUTTON
+   ========================================================= */
+
+#openStats {
+  width: 64px;
+  height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+
+  font-size: 20px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  background: #ffffff;
+  color: #111111;
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+#openStats:hover {
+  transform: scale(1.08);
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.35);
+}
+
+#openStats:active {
+  transform: scale(0.94);
+}
+
+
+/* =========================================================
+   GAMING STATS MODAL
+   ========================================================= */
+
+.stats-modal {
+  position: fixed;
+  inset: 0;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(0, 0, 0, 0.72);
+
+  z-index: 9999;
+}
+
+
+/* =========================================================
+   STATS CONTENT
+   ========================================================= */
+
+.stats-content {
+  width: min(900px, 92vw);
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 26px;
+
+  border-radius: 18px;
+
+  background: #151515;
+  color: #ffffff;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   STATS HEADER
+   ========================================================= */
+
+.stats-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 24px;
+}
+
+.stats-header h2 {
+  margin: 0;
+
+  font-size: 24px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+   ========================================================= */
+
+.stats-close {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+
+  font-size: 25px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.stats-close:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: scale(1.08);
+}
+
+.stats-close:active {
+  transform: scale(0.94);
+}
+
+
+/* =========================================================
+   STATS GRID
+   ========================================================= */
+
+.stats-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 16px;
+}
+
+
+/* =========================================================
+   STAT CARD
+   ========================================================= */
+
+.stats-card {
+  min-width: 0;
+
+  padding: 22px;
+
+  border-radius: 14px;
+
+  background: #202020;
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  text-align: center;
+
+  box-sizing: border-box;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-2px);
+  background: #242424;
+}
+
+
+/* =========================================================
+   STAT ICON
+   ========================================================= */
+
+.stats-card-icon {
+  margin-bottom: 10px;
+
+  font-size: 30px;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   STAT LABEL
+   ========================================================= */
+
+.stats-card-label {
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  color: rgba(255, 255, 255, 0.55);
+}
+
+
+/* =========================================================
+   STAT VALUE
+   ========================================================= */
+
+.stats-card-value {
+  margin-top: 8px;
+
+  font-size: 30px;
+  font-weight: 800;
+
+  line-height: 1.2;
+
+  color: #ffffff;
+
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   HIGHLIGHTED GAME CARDS
+   ========================================================= */
+
+.stats-highlight {
+  padding: 24px;
+}
+
+
+/* Game name */
+
+.stats-game-name {
+  margin-top: 12px;
+
+  font-size: 20px;
+  font-weight: 800;
+
+  line-height: 1.3;
+
+  color: #ffffff;
+
+  word-break: break-word;
+}
+
+
+/* Game value */
+
+.stats-game-value {
+  margin-top: 7px;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  color: rgba(255, 255, 255, 0.65);
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.stats-content::-webkit-scrollbar {
+  width: 7px;
+}
+
+.stats-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.stats-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+
+  border-radius: 10px;
+}
+
+.stats-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .stats-modal {
+    padding: 12px;
+  }
+
+  .stats-content {
+    width: 94vw;
+    max-height: 92vh;
+
+    padding: 20px;
+
+    border-radius: 16px;
+  }
+
+  .stats-header {
+    margin-bottom: 18px;
+  }
+
+  .stats-header h2 {
+    font-size: 21px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+  }
+
+  .stats-card {
+    padding: 18px;
+  }
+
+  .stats-card-value {
+    font-size: 26px;
+  }
+
+  .stats-game-name {
+    font-size: 18px;
+  }
+
+  .stats-close {
+    width: 36px;
+    height: 36px;
+  }
 }

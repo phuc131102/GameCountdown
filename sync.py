@@ -1059,6 +1059,7 @@ for index, psn_game in enumerate(
     )
 
     play_time = None
+    play_sessions = None
     first_played_at = None
     last_played_at = None
 
@@ -1072,6 +1073,12 @@ for index, psn_game in enumerate(
 
         play_time = format_play_time(
             duration
+        )
+        
+        play_sessions = getattr(
+            play_stat,
+            "play_count",
+            None,
         )
 
         first_played = getattr(
@@ -1105,6 +1112,11 @@ for index, psn_game in enumerate(
         print(
             f"  ⏱ Play time: "
             f"{play_time or 'N/A'}"
+        )
+        
+        print(
+            f"  🎮 Play sessions: "
+            f"{play_sessions if play_sessions is not None else 'N/A'}"
         )
 
         print(
@@ -1344,6 +1356,9 @@ for index, psn_game in enumerate(
     if play_time is not None:
 
         update_data["play_time"] = play_time
+        
+    if play_sessions is not None:
+        update_data["play_sessions"] = play_sessions
 
     if first_played_at is not None:
 
@@ -1475,6 +1490,12 @@ for index, psn_game in enumerate(
         update_data[
             "play_time"
         ] = play_time
+        
+    if play_sessions is not None:
+
+        update_data[
+            "play_sessions"
+        ] = play_sessions
 
     if first_played_at is not None:
 
