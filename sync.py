@@ -55,6 +55,14 @@ try:
     psnawp = PSNAWP(NPSSO_CODE)
     psn = psnawp.me()
 
+    trophy_summary = psn.trophy_summary()
+
+    psn_trophy_level = trophy_summary.trophy_level
+
+    print(
+        f"🏆 PSN Trophy Level: {psn_trophy_level}"
+    )
+
     print(f"PSN account: {psn.online_id}")
 
 except Exception as error:
@@ -1348,6 +1356,9 @@ for index, psn_game in enumerate(
     # trophy data is checked successfully.
     if has_trophy_data:
         update_data["trophy_synced_at"] = sync_time
+
+    if psn_trophy_level is not None:
+        update_data["psn_trophy_level"] = psn_trophy_level
 
     # =====================================================
     # PLAY DATA

@@ -32,6 +32,8 @@ const gameSelectorModal = document.getElementById("gameSelectorModal");
 
 const gameDetailsModal = document.getElementById("gameDetailsModal");
 
+const statsPsnLevel = document.getElementById("statsPsnLevel");
+
 const statsModal = document.getElementById("statsModal");
 
 const openStatsBtn = document.getElementById("openStats");
@@ -84,6 +86,8 @@ const gamesAll = document.getElementById("gamesAll");
 
 const gamesPlaying = document.getElementById("gamesPlaying");
 
+const gamesUpcoming = document.getElementById("gamesUpcoming");
+
 const gamesStory = document.getElementById("gamesStory");
 
 const gamesCompleted = document.getElementById("gamesCompleted");
@@ -93,6 +97,8 @@ const gamesBacklog = document.getElementById("gamesBacklog");
 const countAll = document.getElementById("countAll");
 
 const countPlaying = document.getElementById("countPlaying");
+
+const countUpcoming = document.getElementById("countUpcoming");
 
 const countStory = document.getElementById("countStory");
 
@@ -398,6 +404,17 @@ function updateGamingStats() {
 
   let mostPlayedGame = null;
   let mostPlayedSessions = 0;
+
+  const psnLevelGame = games.find(
+    (game) => game.psn_trophy_level != null
+  );
+
+  if (psnLevelGame) {
+    statsPsnLevel.textContent =
+      psnLevelGame.psn_trophy_level;
+  } else {
+    statsPsnLevel.textContent = "—";
+  }
 
   games.forEach((game) => {
     // -----------------------------------------
@@ -1083,6 +1100,17 @@ function getGamesByStatus(status) {
     return games;
   }
 
+  // Upcoming = games that have not been released yet
+  if (status === "upcoming") {
+    const now = new Date();
+
+    return games.filter((game) => {
+      const release = new Date(game.release);
+
+      return release > now;
+    });
+  }
+
   return games.filter((game) => game.status === status);
 }
 
@@ -1144,6 +1172,8 @@ function renderGameSelectorList(containerElement, gameList) {
 }
 
 function updateGameSelector() {
+  const upcoming = getGamesByStatus("upcoming");
+
   const all = getGamesByStatus("all");
 
   const playing = getGamesByStatus("playing");
@@ -1154,7 +1184,13 @@ function updateGameSelector() {
 
   const backlog = getGamesByStatus("backlog");
 
-  // Counts
+
+  // =======================================================
+  // COUNTS
+  // =======================================================
+
+  countUpcoming.textContent = upcoming.length;
+
   countAll.textContent = all.length;
 
   countPlaying.textContent = playing.length;
@@ -1165,7 +1201,13 @@ function updateGameSelector() {
 
   countBacklog.textContent = backlog.length;
 
-  // Game lists
+
+  // =======================================================
+  // GAME LISTS
+  // =======================================================
+
+  renderGameSelectorList(gamesUpcoming, upcoming);
+
   renderGameSelectorList(gamesAll, all);
 
   renderGameSelectorList(gamesPlaying, playing);

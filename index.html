@@ -145,6 +145,20 @@
             <div class="game-select-games" id="gamesAll"></div>
           </div>
 
+          <!-- UPCOMING -->
+          <div class="game-select-group">
+            <button class="game-select-header" data-group="upcoming">
+              <span>
+                Upcoming
+                <span class="game-select-count" id="countUpcoming">0</span>
+              </span>
+
+              <span class="game-select-arrow">›</span>
+            </button>
+
+            <div class="game-select-games" id="gamesUpcoming"></div>
+          </div>
+
           <!-- PLAYING -->
           <div class="game-select-group">
             <button class="game-select-header" data-group="playing">
@@ -287,6 +301,18 @@
         </div>
 
         <div class="stats-grid">
+          <!-- ACCOUNT LEVEL -->
+          <div class="stats-card">
+            <div class="stats-card-icon">🏅</div>
+
+            <div class="stats-card-label">
+              PSN TROPHY LEVEL
+            </div>
+
+            <div id="statsPsnLevel" class="stats-card-value">
+              —
+            </div>
+          </div>
           <!-- Total Play Time -->
           <div class="stats-card">
             <div class="stats-card-icon">⏱️</div>
