@@ -746,10 +746,6 @@ h1 {
     transform: none;
   }
 
-  .card img {
-    height: 50vh;
-  }
-
   .info {
     flex: 1;
 
