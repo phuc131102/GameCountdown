@@ -34,6 +34,8 @@ const gameDetailsModal = document.getElementById("gameDetailsModal");
 
 const statsPsnLevel = document.getElementById("statsPsnLevel");
 
+const statsPsnId = document.getElementById("statsPsnId");
+
 const statsModal = document.getElementById("statsModal");
 
 const openStatsBtn = document.getElementById("openStats");
@@ -121,6 +123,7 @@ const sb = window.supabase.createClient(
 
 let games = [];
 let isAdmin = false;
+let psnProfile = null;
 
 // =========================================================
 // UI HELPERS
@@ -409,10 +412,20 @@ function updateGamingStats() {
     (game) => game.psn_trophy_level != null
   );
 
-  if (psnLevelGame) {
-    statsPsnLevel.textContent =
-      psnLevelGame.psn_trophy_level;
+  if (psnProfile) {
+    statsPsnId.textContent =
+      `PSN: ${psnProfile.online_id || "—"}`;
+
+    statsPsnLevel.innerHTML = `
+      <span class="psn-level-number">
+        ${psnProfile.trophy_level ?? "—"}
+      </span>
+      <span class="psn-level-meta">
+        Tier ${psnProfile.trophy_tier ?? "—"} - ${psnProfile.trophy_progress ?? "—"}% to the next level
+      </span>
+    `;
   } else {
+    statsPsnId.textContent = "PSN: —";
     statsPsnLevel.textContent = "—";
   }
 
@@ -642,6 +655,17 @@ function openGameDetails(game) {
       .map((achievement) => {
         const trophyIcon = getTrophyIcon(achievement.type);
 
+        const rarity = achievement.rarity
+          ? String(achievement.rarity)
+              .replace(/_/g, " ")
+              .replace(/\b\w/g, (char) => char.toUpperCase())
+          : "Unknown";
+
+        const earnRate =
+          achievement.earn_rate != null
+            ? `${Number(achievement.earn_rate).toFixed(1)}%`
+            : "—";
+
         return `
           <div class="earned-achievement">
 
@@ -657,6 +681,18 @@ function openGameDetails(game) {
 
             <div class="earned-achievement-detail">
               ${escapeHTML(achievement.detail || "No description available.")}
+            </div>
+
+            <div class="earned-achievement-meta">
+              <span class="trophy-rarity ${String(
+                achievement.rarity || ""
+              ).toLowerCase()}">
+                ${escapeHTML(rarity)}
+              </span>
+
+              <span class="trophy-earn-rate">
+                ${earnRate}
+              </span>
             </div>
 
             <div class="earned-achievement-date">
@@ -1282,6 +1318,21 @@ gameSelectHeaders.forEach((header) => {
 
   // Load games
   const { data, error } = await sb.from("games").select("*").order("release");
+
+  const { data: profileData, error: profileError } = await sb
+    .from("psn_profile")
+    .select("online_id, trophy_level, trophy_progress, trophy_tier")
+    .eq("id", 1)
+    .single();
+
+  console.log("PSN PROFILE:", profileData);
+  console.log("PSN PROFILE ERROR:", profileError);
+
+  if (profileError) {
+    console.warn("Could not load PSN profile:", profileError);
+  } else {
+    psnProfile = profileData;
+  }
 
   if (error) {
     container.innerHTML = `

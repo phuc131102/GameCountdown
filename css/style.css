@@ -1481,6 +1481,26 @@ h1 {
   border-radius: 10px;
 }
 
+.earned-achievement-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+}
+
+.trophy-rarity {
+  text-transform: capitalize;
+}
+
+.trophy-earn-rate {
+  opacity: 0.75;
+}
+
+.trophy-earn-rate::before {
+  content: "• ";
+}
+
 .earned-achievement:last-child {
   margin-bottom: 0;
 }
@@ -1824,6 +1844,9 @@ h1 {
   color: #ffffff;
 
   word-break: break-word;
+
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -1951,4 +1974,20 @@ h1 {
   .skeleton-card {
     width: 100% !important;
   }
+}
+
+.stats-psn-id {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #888;
+  font-weight: 500;
+}
+
+.psn-level-meta {
+  margin-left: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #888;
+  vertical-align: middle;
+  margin-top: 10px;
 }

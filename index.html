@@ -293,7 +293,10 @@
     <div id="statsModal" class="modal stats-modal">
       <div class="stats-content">
         <div class="stats-header">
-          <h2>Gaming Statistics</h2>
+          <div>
+              <h2>Gaming Statistics</h2>
+              <div id="statsPsnId" class="stats-psn-id">PSN: —</div>
+          </div>
 
           <button id="closeStats" class="stats-close" aria-label="Close">
             &times;
@@ -303,15 +306,9 @@
         <div class="stats-grid">
           <!-- ACCOUNT LEVEL -->
           <div class="stats-card">
-            <div class="stats-card-icon">🏅</div>
-
-            <div class="stats-card-label">
-              PSN TROPHY LEVEL
-            </div>
-
-            <div id="statsPsnLevel" class="stats-card-value">
-              —
-            </div>
+            <div class="stats-card-icon">🏆</div>
+            <div class="stats-card-label">PSN LEVEL</div>
+            <div id="statsPsnLevel" class="stats-card-value">—</div>
           </div>
           <!-- Total Play Time -->
           <div class="stats-card">

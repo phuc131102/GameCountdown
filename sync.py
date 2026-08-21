@@ -23,6 +23,16 @@ FUZZY_THRESHOLD = 85
 #   Only sync trophy summary / play stats.
 SYNC_ACHIEVEMENT_DETAILS = True
 
+# True:
+#   Force refresh detailed trophy data for all games.
+#
+# Use this once after adding new achievement fields
+# such as rarity / earn_rate.
+#
+# False:
+#   Only fetch detailed achievements when the
+#   earned trophy count changes.
+FORCE_SYNC_ACHIEVEMENT_DETAILS = False
 
 # =========================================================
 # ENV
@@ -49,41 +59,86 @@ if not SUPABASE_KEY:
 # CLIENTS
 # =========================================================
 
-print("Connecting to PSN...")
-
-try:
-    psnawp = PSNAWP(NPSSO_CODE)
-    psn = psnawp.me()
-
-    trophy_summary = psn.trophy_summary()
-
-    psn_trophy_level = trophy_summary.trophy_level
-
-    print(
-        f"🏆 PSN Trophy Level: {psn_trophy_level}"
-    )
-
-    print(f"PSN account: {psn.online_id}")
-
-except Exception as error:
-    print("ERROR connecting to PSN:")
-    print(error)
-    raise
-
-
 print("Connecting to Supabase...")
 
 try:
+
     supabase = create_client(
         SUPABASE_URL,
         SUPABASE_KEY,
     )
 
+    print("✓ Supabase connected")
+
 except Exception as error:
+
     print("ERROR connecting to Supabase:")
     print(error)
     raise
 
+
+print("Connecting to PSN...")
+
+try:
+
+    psnawp = PSNAWP(NPSSO_CODE)
+    psn = psnawp.me()
+
+    trophy_summary = psn.trophy_summary()
+
+    psn_trophy_level = getattr(
+        trophy_summary,
+        "trophy_level",
+        None,
+    )
+
+    psn_trophy_progress = getattr(
+        trophy_summary,
+        "progress",
+        None,
+    )
+
+    psn_trophy_tier = getattr(
+        trophy_summary,
+        "tier",
+        None,
+    )
+
+    print(
+        f"🏆 PSN Trophy Level: "
+        f"{psn_trophy_level}"
+        f" "
+        f"({psn_trophy_progress}% to next level)"
+    )
+
+    print(
+        f"PSN account: {psn.online_id}"
+    )
+
+    profile_data = {
+        "id": 1,
+        "online_id": psn.online_id,
+        "trophy_level": psn_trophy_level,
+        "trophy_progress": psn_trophy_progress,
+        "trophy_tier": psn_trophy_tier,
+        "synced_at": datetime.now(
+            timezone.utc
+        ).isoformat(),
+    }
+
+    supabase.table(
+        "psn_profile"
+    ).upsert(
+        profile_data
+    ).execute()
+
+    print("✓ PSN profile synced")
+
+except Exception as error:
+
+    print("ERROR connecting to PSN:")
+    print(error)
+    raise
 
 # =========================================================
 # HELPERS
@@ -353,6 +408,28 @@ def get_stat_name(stat):
 
     return None
 
+def get_trophy_rarity(trophy):
+    value = getattr(
+        trophy,
+        "trophy_rarity",
+        None,
+    )
+
+    if value is None:
+        return None
+
+    # Enum → string name
+    name = getattr(
+        value,
+        "name",
+        None,
+    )
+
+    if name:
+        return str(name).lower()
+
+    return str(value).lower()
+
 def get_trophy_type(trophy):
     value = getattr(
         trophy,
@@ -537,7 +614,13 @@ def get_earned_achievements(
                 "earned_at": iso_datetime(
                     earned_at
                 ),
-                "type": get_trophy_type(trophy)
+                "type": get_trophy_type(trophy),
+                "rarity": get_trophy_rarity(trophy),
+                "earn_rate": getattr(
+                    trophy,
+                    "trophy_earn_rate",
+                    None,
+                ),
             }
         )
 
@@ -1284,6 +1367,18 @@ for index, psn_game in enumerate(
 
         should_fetch_achievement_details = True
 
+        # -----------------------------------------------------
+    # FORCE FULL ACHIEVEMENT REFRESH
+    # -----------------------------------------------------
+
+    if FORCE_SYNC_ACHIEVEMENT_DETAILS:
+
+        print(
+            "  🔄 Force syncing achievement details"
+        )
+
+        should_fetch_achievement_details = True
+
     # =====================================================
     # ACHIEVEMENT DETAILS
     # =====================================================
@@ -1356,9 +1451,6 @@ for index, psn_game in enumerate(
     # trophy data is checked successfully.
     if has_trophy_data:
         update_data["trophy_synced_at"] = sync_time
-
-    if psn_trophy_level is not None:
-        update_data["psn_trophy_level"] = psn_trophy_level
 
     # =====================================================
     # PLAY DATA
@@ -1634,19 +1726,6 @@ for index, psn_game in enumerate(
         )
 
         errors += 1
-
-    except Exception as error:
-
-        print(
-            "  ✗ Supabase update failed:"
-        )
-
-        print(
-            f"    {error}"
-        )
-
-        errors += 1
-
 
 # =========================================================
 # SUMMARY
