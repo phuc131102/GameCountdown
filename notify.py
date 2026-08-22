@@ -275,7 +275,13 @@ if len(pending) == 1:
     if item["days"] == 0:
         subject = (
             f"🎮 {item['game']['name']} "
-            f"is out now!"
+            f"releases today!"
+        )
+
+    elif item["days"] == 1:
+        subject = (
+            f"🎮 {item['game']['name']} "
+            f"releases tomorrow"
         )
 
     else:
@@ -301,10 +307,10 @@ for item in pending:
     release_dt = item["release"]
 
     if days == 0:
-        countdown = "OUT NOW"
+        countdown = "TODAY"
 
     elif days == 1:
-        countdown = "1 DAY"
+        countdown = "TOMORROW"
 
     else:
         countdown = f"{days} DAYS"
