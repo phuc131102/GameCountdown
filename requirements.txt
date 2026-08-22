@@ -2,3 +2,5 @@ python-dotenv
 rapidfuzz
 supabase
 psnawp-api
+resend
+tzdata
